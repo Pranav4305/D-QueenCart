@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>D-QueenCart — Admin Dashboard</title>
+  <link rel="icon" type="image/png" href="favicon.png?v=2">
+  <link rel="shortcut icon" href="favicon.png?v=2">
+  <link rel="apple-touch-icon" href="favicon.png?v=2">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400&family=Jost:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --cream: #faf8f5;
+      --gold: #c8a97e;
+      --gold-light: #e8d9c0;
+      --dark: #1a3a32;
+      --muted: #8a8a8a;
+      --sidebar: #0e2a23;
+      --error: #c0392b;
+      --success: #27ae60
+    }
+
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: #f2ede6;
+      color: var(--dark);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar);
+      padding: 2rem 0;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      overflow-y: auto
+    }
+
+    .sidebar-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: .3em;
+      color: var(--cream);
+      padding: 0 1.8rem 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, .07)
+    }
+
+    .sidebar-logo small {
+      display: block;
+      font-family: 'Jost', sans-serif;
+      font-size: .6rem;
+      letter-spacing: .2em;
+      color: var(--muted);
+      margin-top: .2rem
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 1.5rem 0
+    }
+
+    .nav-group-label {
+      font-size: .58rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .3);
+      padding: .5rem 1.8rem;
+      margin-top: .5rem
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      padding: .75rem 1.8rem;
+      color: rgba(255, 255, 255, .55);
+      font-size: .82rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all .2s;
+      border-left: 2px solid transparent;
+      user-select: none
+    }
+
+    .nav-item:hover {
+      color: var(--cream);
+      background: rgba(255, 255, 255, .04)
+    }
+
+    .nav-item.active {
+      color: var(--gold);
+      border-left-color: var(--gold);
+      background: rgba(201, 169, 110, .07)
+    }
+
+    .nav-item .icon {
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0
+    }
+
+    .sidebar-user {
+      padding: 1.5rem 1.8rem;
+      border-top: 1px solid rgba(255, 255, 255, .07)
+    }
+
+    .s-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: .85rem;
+      font-weight: 500;
+      flex-shrink: 0
+    }
+
+    .s-info {
+      display: flex;
+      align-items: center;
+      gap: .8rem
+    }
+
+    .s-name {
+      font-size: .8rem;
+      color: var(--cream)
+    }
+
+    .s-role {
+      font-size: .65rem;
+      color: var(--muted);
+      letter-spacing: .1em
+    }
+
+    .main {
+      flex: 1;
+      margin-left: 240px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0
+    }
+
+    .topbar {
+      background: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ede8e0;
+      position: sticky;
+      top: 0;
+      z-index: 50
+    }
+
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 300
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem
+    }
+
+    .topbar-btn {
+      padding: .5rem 1.2rem;
+      font-size: .72rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      border: 1px solid var(--gold-light);
+      background: transparent;
+      color: var(--dark);
+      cursor: pointer;
+      transition: all .3s
+    }
+
+    .topbar-btn:hover {
+      background: var(--dark);
+      color: var(--cream);
+      border-color: var(--dark)
+    }
+
+    .topbar-btn.primary {
+      background: var(--gold);
+      color: white;
+      border-color: var(--gold)
+    }
+
+    .topbar-btn.primary:hover {
+      background: var(--dark)
+    }
+
+    .notif-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--gold-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 7px;
+      height: 7px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: none
+    }
+
+    .content {
+      padding: 2rem;
+      flex: 1
+    }
+
+    .panel {
+      display: none
+    }
+
+    .panel.active {
+      display: block
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 2rem
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-bottom: 3px solid transparent;
+      transition: border-color .3s
+    }
+
+    .stat-card:hover {
+      border-bottom-color: var(--gold)
+    }
+
+    .stat-label {
+      font-size: .65rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .5rem
+    }
+
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--dark)
+    }
+
+    .stat-sub {
+      font-size: .72rem;
+      margin-top: .3rem;
+      color: var(--muted)
+    }
+
+    .stat-sub.up {
+      color: var(--success)
+    }
+
+    .stat-sub.warn {
+      color: #e67e22
+    }
+
+    /* Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 2rem
+    }
+
+    .chart-card {
+      background: white;
+      padding: 1.5rem
+    }
+
+    .chart-title {
+      font-size: .8rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.2rem
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      padding: 1.5rem;
+      margin-bottom: 1.2rem
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+      gap: .8rem
+    }
+
+    .card-title {
+      font-size: .8rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted)
+    }
+
+    .tbl-wrap {
+      overflow-x: auto
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 480px
+    }
+
+    .table th {
+      font-size: .65rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: left;
+      padding: .6rem .8rem;
+      border-bottom: 1px solid #ede8e0;
+      white-space: nowrap
+    }
+
+    .table td {
+      font-size: .82rem;
+      padding: .75rem .8rem;
+      border-bottom: 1px solid #f5f1eb;
+      color: var(--dark);
+      vertical-align: middle
+    }
+
+    .table tr:last-child td {
+      border-bottom: none
+    }
+
+    .table tr:hover td {
+      background: #faf8f4
+    }
+
+    .badge {
+      display: inline-block;
+      padding: .25rem .7rem;
+      font-size: .65rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border-radius: 2px
+    }
+
+    .badge.pending {
+      background: rgba(201, 169, 110, .15);
+      color: #8a6420
+    }
+
+    .badge.confirmed {
+      background: rgba(39, 174, 96, .12);
+      color: #1a7a3e
+    }
+
+    .badge.shipped {
+      background: rgba(52, 152, 219, .12);
+      color: #1a5276
+    }
+
+    .badge.delivered {
+      background: rgba(39, 174, 96, .2);
+      color: #145a32
+    }
+
+    .badge.cancelled {
+      background: rgba(192, 57, 43, .1);
+      color: var(--error)
+    }
+
+    .badge.paid {
+      background: rgba(39, 174, 96, .2);
+      color: #145a32;
+      cursor: pointer;
+    }
+
+    .badge.unpaid {
+      background: rgba(192, 57, 43, .15);
+      color: #8b2635;
+      cursor: pointer;
+    }
+
+    .badge.unpaid:hover,
+    .badge.paid:hover {
+      filter: brightness(0.9);
+      transform: scale(1.05);
+    }
+
+    .loading-cell {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: .82rem
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--gold-light);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: .4rem
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .status-sel {
+      padding: .3rem .6rem;
+      border: 1px solid var(--gold-light);
+      background: #f9f5ef;
+      font-family: 'Jost', sans-serif;
+      font-size: .75rem;
+      color: var(--dark);
+      outline: none;
+      cursor: pointer;
+      border-radius: 2px
+    }
+
+    /* Product form */
+    .product-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start
+    }
+
+    .fg {
+      margin-bottom: 1rem
+    }
+
+    .fl {
+      display: block;
+      font-size: .68rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .4rem
+    }
+
+    .fl em {
+      color: var(--error);
+      font-style: normal
+    }
+
+    .fi {
+      width: 100%;
+      padding: .75rem 1rem;
+      background: #f9f5ef;
+      border: 1px solid var(--gold-light);
+      color: var(--dark);
+      font-family: 'Jost', sans-serif;
+      font-size: .88rem;
+      outline: none;
+      transition: border-color .3s
+    }
+
+    .fi:focus {
+      border-color: var(--gold)
+    }
+
+    .fi.err {
+      border-color: var(--error)
+    }
+
+    .fs {
+      width: 100%;
+      padding: .75rem 1rem;
+      background: #f9f5ef;
+      border: 1px solid var(--gold-light);
+      color: var(--dark);
+      font-family: 'Jost', sans-serif;
+      font-size: .88rem;
+      outline: none;
+      cursor: pointer
+    }
+
+    .fs:focus {
+      border-color: var(--gold)
+    }
+
+    .ft {
+      width: 100%;
+      padding: .75rem 1rem;
+      background: #f9f5ef;
+      border: 1px solid var(--gold-light);
+      color: var(--dark);
+      font-family: 'Jost', sans-serif;
+      font-size: .88rem;
+      outline: none;
+      resize: vertical;
+      min-height: 80px
+    }
+
+    .fhint {
+      font-size: .68rem;
+      color: var(--muted);
+      margin-top: .3rem
+    }
+
+    .ferr-msg {
+      font-size: .68rem;
+      color: var(--error);
+      margin-top: .3rem;
+      display: none
+    }
+
+    .ferr-msg.show {
+      display: block
+    }
+
+    .upload-zone {
+      border: 2px dashed var(--gold-light);
+      padding: 2.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .3s;
+      background: #faf8f4;
+      position: relative
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      border-color: var(--gold);
+      background: rgba(201, 169, 110, .05)
+    }
+
+    .upload-zone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%
+    }
+
+    .upload-icon {
+      font-size: 2.5rem;
+      margin-bottom: .5rem
+    }
+
+    .upload-text {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.6
+    }
+
+    .upload-preview {
+      max-width: 100%;
+      max-height: 200px;
+      margin-top: 1rem;
+      display: none;
+      border: 1px solid var(--gold-light)
+    }
+
+    .btn-rmbg {
+      display: none;
+      margin-top: .8rem;
+      padding: .5rem 1rem;
+      background: rgba(201, 169, 110, .15);
+      border: 1px solid var(--gold-light);
+      font-size: .72rem;
+      letter-spacing: .15em;
+      color: var(--gold);
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all .3s;
+      width: 100%
+    }
+
+    .btn-rmbg:hover {
+      background: var(--gold);
+      color: white
+    }
+
+    .btn-submit {
+      padding: .9rem 2rem;
+      background: var(--dark);
+      color: white;
+      border: none;
+      font-family: 'Jost', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .3s;
+      width: 100%;
+      margin-top: .5rem
+    }
+
+    .btn-submit:hover {
+      background: var(--gold)
+    }
+
+    .btn-submit:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .btn-sec {
+      padding: .7rem 1.4rem;
+      background: transparent;
+      border: 1px solid var(--gold-light);
+      color: var(--dark);
+      font-family: 'Jost', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .3s;
+      width: 100%;
+      margin-top: .5rem
+    }
+
+    .btn-sec:hover {
+      border-color: var(--dark)
+    }
+
+    /* Products grid */
+    .prod-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem
+    }
+
+    .prod-card {
+      background: white;
+      overflow: hidden;
+      transition: box-shadow .2s
+    }
+
+    .prod-card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .08)
+    }
+
+    .prod-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      padding: 0.2rem;
+      background: #fff;
+      display: block
+    }
+
+    .prod-info {
+      padding: 1rem
+    }
+
+    .prod-name {
+      font-size: .88rem;
+      font-weight: 500;
+      margin-bottom: .2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .prod-meta {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-bottom: .4rem
+    }
+
+    .prod-price {
+      font-size: .82rem;
+      color: var(--gold);
+      margin-bottom: .6rem
+    }
+
+    .prod-actions {
+      display: flex;
+      gap: .5rem
+    }
+
+    .btn-edit {
+      flex: 1;
+      padding: .4rem;
+      background: #f9f5ef;
+      border: 1px solid var(--gold-light);
+      font-size: .65rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .3s
+    }
+
+    .btn-edit:hover {
+      background: var(--gold);
+      color: white;
+      border-color: var(--gold)
+    }
+
+    .btn-del {
+      padding: .4rem .8rem;
+      background: rgba(192, 57, 43, .08);
+      border: 1px solid rgba(192, 57, 43, .2);
+      font-size: .65rem;
+      cursor: pointer;
+      color: var(--error);
+      transition: all .3s
+    }
+
+    .btn-del:hover {
+      background: var(--error);
+      color: white
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .55);
+      z-index: 9998;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem;
+      overflow-y: auto
+    }
+
+    .modal-overlay.show {
+      display: flex
+    }
+
+    .modal {
+      background: white;
+      width: 100%;
+      max-width: 620px;
+      padding: 2rem;
+      margin: auto
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gold-light)
+    }
+
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 300
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--muted)
+    }
+
+    .modal-close:hover {
+      color: var(--dark)
+    }
+
+    /* Filters */
+    .search-input {
+      padding: .6rem 1rem;
+      border: 1px solid var(--gold-light);
+      background: #f9f5ef;
+      font-family: 'Jost', sans-serif;
+      font-size: .82rem;
+      outline: none;
+      transition: border-color .3s
+    }
+
+    .search-input:focus {
+      border-color: var(--gold)
+    }
+
+    /* Auth gate */
+    .auth-gate {
+      position: fixed;
+      inset: 0;
+      background: var(--sidebar);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .ag-card {
+      background: white;
+      padding: 2.5rem;
+      width: 420px;
+      max-width: 95vw
+    }
+
+    .ag-err {
+      font-size: .78rem;
+      color: var(--error);
+      margin-top: .6rem;
+      padding: .6rem .8rem;
+      background: rgba(192, 57, 43, .07);
+      border: 1px solid rgba(192, 57, 43, .2);
+      display: none
+    }
+
+    .ag-err.show {
+      display: block
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      20%,
+      60% {
+        transform: translateX(-8px)
+      }
+
+      40%,
+      80% {
+        transform: translateX(8px)
+      }
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--dark);
+      color: var(--cream);
+      padding: 1rem 2rem;
+      font-size: .82rem;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all .4s;
+      max-width: 340px
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    .toast.ok {
+      background: var(--success)
+    }
+
+    .toast.bad {
+      background: var(--error)
+    }
+
+    @media(max-width:1100px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr
+      }
+
+      .prod-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media(max-width:900px) {
+      .product-form {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:768px) {
+      .sidebar {
+        transform: translateX(-100%)
+      }
+
+      .main {
+        margin-left: 0
+      }
+    }
+
+    /* Custom Cursor */
+    .cursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: var(--dark);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+      display: none;
+    }
+
+    .cursor-follower {
+      position: fixed;
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--dark);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: all 0.15s ease;
+      opacity: 0.5;
+      display: none;
+    }
+
+    body.has-custom-cursor,
+    body.has-custom-cursor *,
+    body.has-custom-cursor a,
+    body.has-custom-cursor button {
+      cursor: none !important;
+    }
+
+    body.has-custom-cursor .cursor,
+    body.has-custom-cursor .cursor-follower {
+      display: block;
+    }
+
+    @media (pointer: coarse) {
+
+      .cursor,
+      .cursor-follower {
+        display: none !important;
+      }
+
+      body.has-custom-cursor {
+        cursor: auto !important;
+      }
+    }
+  </style>
+  <script src="luxury-ui.js"></script>
+</head>
+
+<body>
+
+  <!-- Auth Gate Removed -->
+
+  <!-- Edit Product Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Edit Product</div>
+        <button class="modal-close" onclick="closeEditModal()">✕</button>
+      </div>
+      <div class="fg"><label class="fl">Product Name <em>*</em></label><input type="text" class="fi" id="eName" /></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="fg"><label class="fl">Category <em>*</em></label>
+          <select class="fs" id="eCat">
+            <option value="necklaces">Necklaces</option>
+            <option value="rings">Rings</option>
+            <option value="earrings">Earrings</option>
+            <option value="studs">Studs</option>
+            <option value="bracelets">Bracelets</option>
+            <option value="anklets">Anklets</option>
+            <option value="bangles">Bangles</option>
+            <option value="hair-accessories">Hair Accessories</option>
+
+            <option value="waist-chains">Waist Chains</option>
+            <option value="scrunchies">Scrunchies</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="fg"><label class="fl">Price (₹) <em>*</em></label><input type="number" class="fi" id="ePrice"
+            min="0" /></div>
+        <div class="fg"><label class="fl">Old / MRP (₹)</label><input type="number" class="fi" id="eOldPrice" min="0" />
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="fg"><label class="fl">Badge</label>
+          <select class="fs" id="eBadge">
+            <option value="">None</option>
+            <option value="New">New</option>
+            <option value="Hot">Hot</option>
+            <option value="Sale">Sale</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Stock</label><input type="number" class="fi" id="eStock" min="0" /></div>
+      </div>
+      <div class="product-form" style="grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <div class="fg">
+            <label class="fl">Change Image</label>
+            <div class="upload-zone" id="eUploadZone">
+              <input type="file" id="eImageFile" accept="image/*" onchange="handleEditUpload(this)" />
+              <div class="upload-icon">📸</div>
+              <div class="upload-text">Drop image here or <strong>click to browse</strong></div>
+            </div>
+            <img class="upload-preview" id="eImgPrev" alt="Preview" style="max-height: 150px;" />
+            <div id="eRmbgStatus" style="font-size:.68rem;margin:.4rem 0;color:var(--muted);display:none"></div>
+            <button class="btn-rmbg" id="eRmbgBtn" onclick="eRemoveBackground()">✨ Remove Background (GPU)</button>
+            <button class="btn-sec" id="eRmImgBtn" onclick="removeEditImage()" style="margin-top:.5rem;width:100%;font-size:.7rem;padding:.42rem;display:none">🗑️ Remove Current Image</button>
+          </div>
+          <div class="fg">
+            <label class="fl">Or Image URL</label>
+            <input type="text" class="fi" id="eImg" oninput="eImgPreview(this.value)" />
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="eSaveBtn" onclick="saveEdit()">Save Changes</button>
+      <button class="btn-sec" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">D-QueenCart <small>Admin Panel</small></div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Overview</div>
+      <a class="nav-item active" onclick="showPanel('dashboard',this)"><span class="icon">📊</span> Dashboard</a>
+      <a class="nav-item" onclick="showPanel('orders',this)"><span class="icon">🛍️</span> Orders <span id="pendingPill"
+          style="display:none;margin-left:auto;background:var(--gold);color:white;font-size:.6rem;padding:.1rem .5rem;border-radius:10px"></span></a>
+      <div class="nav-group-label">Catalogue</div>
+      <a class="nav-item" onclick="showPanel('products',this)"><span class="icon">💎</span> Products</a>
+      <a class="nav-item" onclick="showPanel('addProduct',this)"><span class="icon">➕</span> Add Product</a>
+      <a class="nav-item" onclick="showPanel('bulkAI',this)"><span class="icon">🤖</span> AI Bulk Upload</a>
+      <div class="nav-group-label">Customers</div>
+      <a class="nav-item" onclick="showPanel('users',this)"><span class="icon">👥</span> Customers</a>
+      <div class="nav-group-label">Settings</div>
+      <a class="nav-item" href="index.html"><span class="icon">🌐</span> View Site</a>
+      <a class="nav-item" onclick="logout()"><span class="icon">🚪</span> Logout</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="s-info">
+        <div class="s-avatar">A</div>
+        <div>
+          <div class="s-name">Admin</div>
+          <div class="s-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 class="page-title" id="panelTitle">Dashboard</h1>
+      <div class="topbar-right">
+        <div class="notif-btn" title="Notifications">🔔<div class="notif-dot" id="notifDot"></div>
+        </div>
+        <button class="topbar-btn primary"
+          onclick="showPanel('addProduct',document.querySelector('[onclick*=addProduct]'))">+ Add Product</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value" id="sRevenue">—</div>
+            <div class="stat-sub up" id="sRevSub">Loading…</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-value" id="sOrders">—</div>
+            <div class="stat-sub warn" id="sOrdSub">Loading…</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Customers</div>
+            <div class="stat-value" id="sUsers">—</div>
+            <div class="stat-sub" id="sUserSub">Loading…</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Products</div>
+            <div class="stat-value" id="sProds">—</div>
+            <div class="stat-sub" id="sProdSub">Loading…</div>
+          </div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-title">Revenue by Category (₹)</div><canvas id="revenueChart" height="110"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Orders by Status</div><canvas id="statusChart" height="110"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Orders</div>
+            <button class="topbar-btn" onclick="showPanel('orders',document.querySelector('[onclick*=orders]'))">View
+              All →</button>
+          </div>
+          <div class="tbl-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Payment</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="recentBody">
+                <tr>
+                  <td colspan="6" class="loading-cell"><span class="spinner"></span> Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="panel" id="panel-orders">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">All Orders (<span id="orderCount">0</span>)</div>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+              <select class="search-input" id="ordStatusFilter" onchange="filterOrders()" style="width:auto">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <input class="search-input" id="ordSearch" placeholder="Search customer…" oninput="filterOrders()"
+                style="width:200px" />
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Customer</th>
+                  <th>Phone</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Payment</th>
+                  <th>Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="ordersBody">
+                <tr>
+                  <td colspan="8" class="loading-cell"><span class="spinner"></span> Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="panel" id="panel-products">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">All Products (<span id="prodCount">0</span>)</div>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+              <select class="search-input" id="prodCatFilter" onchange="filterProducts()" style="width:auto">
+                <option value="">All Categories</option>
+                <option value="necklaces">Necklaces</option>
+                <option value="rings">Rings</option>
+                <option value="earrings">Earrings</option>
+                <option value="studs">Studs</option>
+                <option value="bracelets">Bracelets</option>
+                <option value="anklets">Anklets</option>
+                <option value="bangles">Bangles</option>
+                <option value="hair-accessories">Hair Accessories</option>
+
+                <option value="waist-chains">Waist Chains</option>
+                <option value="scrunchies">Scrunchies</option>
+              </select>
+              <input class="search-input" id="prodSearch" placeholder="Search name…" oninput="filterProducts()"
+                style="width:180px" />
+              <button class="topbar-btn primary"
+                onclick="showPanel('addProduct',document.querySelector('[onclick*=addProduct]'))">+ Add New</button>
+            </div>
+          </div>
+          <div class="prod-grid" id="prodGrid">
+            <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)"><span
+                class="spinner"></span> Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD PRODUCT -->
+      <div class="panel" id="panel-addProduct">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Add New Product</div>
+          </div>
+          <div class="product-form">
+            <div>
+              <div class="fg">
+                <label class="fl">Product Image</label>
+                <div class="upload-zone" id="uploadZone">
+                  <input type="file" id="imageFile" accept="image/*" onchange="handleUpload(this)" />
+                  <div class="upload-icon">📸</div>
+                  <div class="upload-text">Drop image here or <strong>click to browse</strong><br />JPG, PNG, WEBP — Max
+                    5MB</div>
+                </div>
+                <img class="upload-preview" id="imgPreview" alt="Preview" />
+                <div id="rmbgStatus" style="font-size:.68rem;margin:.4rem 0;color:var(--muted);display:none"></div>
+                <button class="btn-rmbg" id="rmbgBtn" onclick="removeBackground()">✨ Remove Background (GPU)</button>
+              </div>
+              <div class="fg">
+                <label class="fl">Or Paste Image URL</label>
+                <input type="text" class="fi" id="pImgUrl" placeholder="https://…" oninput="previewUrl(this.value)" />
+                <div class="fhint">Unsplash, Cloudinary, or any public image URL</div>
+              </div>
+            </div>
+            <div>
+              <div class="fg">
+                <label class="fl">Product Name <em>*</em></label>
+                <input type="text" class="fi" id="pName" placeholder="e.g. Celestial Gold Necklace" />
+                <div class="ferr-msg" id="pNameErr">Name is required</div>
+              </div>
+              <div class="fg">
+                <label class="fl">Category <em>*</em></label>
+                <select class="fs" id="pCat">
+                  <option value="">Select Category</option>
+                  <option value="necklaces">Necklaces</option>
+                  <option value="rings">Rings</option>
+                  <option value="earrings">Earrings</option>
+                  <option value="studs">Studs</option>
+                  <option value="bracelets">Bracelets</option>
+                  <option value="anklets">Anklets</option>
+                  <option value="bangles">Bangles</option>
+                  <option value="hair-accessories">Hair Accessories</option>
+                  <option value="waist-chains">Waist Chains</option>
+                  <option value="scrunchies">Scrunchies</option>
+                </select>
+                <div class="ferr-msg" id="pCatErr">Category is required</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+                <div class="fg">
+                  <label class="fl">Price (₹) <em>*</em></label>
+                  <input type="number" class="fi" id="pPrice" placeholder="1999" min="1" />
+                  <div class="ferr-msg" id="pPriceErr">Valid price required</div>
+                </div>
+                <div class="fg">
+                  <label class="fl">Old / MRP (₹)</label>
+                  <input type="number" class="fi" id="pOldPrice" placeholder="2499" min="0" />
+                  <div class="fhint">Leave blank if no discount</div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+                <div class="fg"><label class="fl">Badge</label>
+                  <select class="fs" id="pBadge">
+                    <option value="">None</option>
+                    <option value="New">New</option>
+                    <option value="Hot">Hot</option>
+                    <option value="Sale">Sale</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+                <div class="fg"><label class="fl">Stock Qty</label><input type="number" class="fi" id="pStock"
+                    placeholder="50" min="0" /></div>
+              </div>
+              <button class="btn-submit" id="addBtn" onclick="addProduct()">Save Product →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CUSTOMERS -->
+      <div class="panel" id="panel-users">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Customers (<span id="userCount">0</span>)</div>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+              <input class="search-input" id="userSearch" placeholder="Search customer…" oninput="filterUsers()"
+                style="width:200px" />
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Registered Date</th>
+                  <th>Orders Count</th>
+                </tr>
+              </thead>
+              <tbody id="usersBody">
+                <tr>
+                  <td colspan="5" class="loading-cell"><span class="spinner"></span> Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI BULK UPLOAD -->
+      <div class="panel" id="panel-bulkAI">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">AI Powered Batch Migration</div>
+          </div>
+          <div class="content-body" style="padding: 2rem;">
+            
+            <!-- API Key Section -->
+            <div class="card" style="background: rgba(200, 169, 126, 0.05); border: 1px dashed var(--gold-light); margin-bottom: 2rem;">
+              <div style="padding: 1.5rem;">
+                <label class="fl">Groq API Key <small>(Free Tier Llama 3.2 Vision)</small></label>
+                <div style="display:flex; gap: 0.8rem;">
+                  <input type="password" class="fi" id="groqKey" placeholder="Paste your API key from GroqCloud..." />
+                  <button class="topbar-btn primary" onclick="saveGroqKey()">Save Key</button>
+                </div>
+                <div class="fhint" style="margin-top: 0.5rem;">Get yours incredibly fast and free at <a href="https://console.groq.com/keys" target="_blank" style="color:var(--gold)">console.groq.com/keys</a></div>
+              </div>
+            </div>
+
+            <div class="product-form" style="grid-template-columns: 1fr 1.5fr;">
+              <!-- Left: Configuration -->
+              <div style="padding-right: 2rem; border-right: 1px solid #eee;">
+                <h3 style="font-family:'Cormorant Garamond'; margin-bottom: 1.5rem;">Batch Settings</h3>
+                <div class="fg">
+                  <label class="fl">Price for this Batch (₹) <em>*</em></label>
+                  <input type="number" class="fi" id="bulkPrice" placeholder="e.g. 1499" />
+                </div>
+                <div class="fg">
+                  <label class="fl">Old Price / MRP (₹)</label>
+                  <input type="number" class="fi" id="bulkOldPrice" placeholder="e.g. 2999" />
+                </div>
+                <div class="fg">
+                  <label class="fl">Default Stock</label>
+                  <input type="number" class="fi" id="bulkStock" value="50" />
+                </div>
+                <div class="fg" style="margin-top: 1rem;">
+                  <label class="fl">Category</label>
+                  <select class="fi" id="bulkCategoryOverride">
+                    <option value="auto">Auto-Detect (AI)</option>
+                    <option value="necklaces">Necklaces</option>
+                    <option value="rings">Rings</option>
+                    <option value="earrings">Earrings</option>
+                    <option value="studs">Studs</option>
+                    <option value="bracelets">Bracelets</option>
+                    <option value="anklets">Anklets</option>
+                    <option value="bangles">Bangles</option>
+                    <option value="hair-accessories">Hair Accessories</option>
+                    <option value="waist-chains">Waist Chains</option>
+                    <option value="scrunchies">Scrunchies</option>
+                  </select>
+                </div>
+                
+                <!-- Remove Background Toggle -->
+                <div class="fg" style="margin-top: 1.5rem;">
+                  <label class="fl" style="margin-bottom: 0.6rem;">Image Processing</label>
+                  <div style="background: rgba(200,169,126,0.07); border: 1px solid rgba(200,169,126,0.25); border-radius: 10px; padding: 0.9rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; cursor: pointer;" onclick="document.getElementById('bulkRemoveBg').click()">
+                    <div>
+                      <div style="font-size: 0.82rem; font-weight: 600; color: var(--dark);">✨ Remove Background (GPU)</div>
+                      <div style="font-size: 0.68rem; color: var(--muted); margin-top: 0.2rem;">Requires <code style="background:#f0ebe2;padding:1px 4px;border-radius:3px;">python bg_server.py</code> running</div>
+                    </div>
+                    <label style="position:relative;display:inline-block;width:42px;height:22px;flex-shrink:0;cursor:pointer;" onclick="event.stopPropagation()">
+                      <input type="checkbox" id="bulkRemoveBg" style="opacity:0;width:0;height:0;" onchange="onBulkRemoveBgToggle(this)" />
+                      <span id="bulkRemoveBgTrack" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#ccc;border-radius:22px;transition:background 0.2s;"></span>
+                      <span id="bulkRemoveBgThumb" style="position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.3);"></span>
+                    </label>
+                  </div>
+                  <div id="bulkRmbgStatus" style="font-size:0.68rem;margin-top:0.4rem;color:var(--muted);display:none;"></div>
+                </div>
+
+                <h3 style="font-family:'Cormorant Garamond'; margin-top: 2rem; margin-bottom: 1rem;">Select Products</h3>
+                <div class="upload-zone" id="bulkUploadZone" style="height: 150px;">
+                  <input type="file" id="bulkFiles" accept="image/*" multiple onchange="handleBulkSelect(this)" />
+                  <div class="upload-icon">📸</div>
+                  <div class="upload-text">Select up to 20 images <br><strong>to start AI processing</strong></div>
+                </div>
+                
+                <button class="btn-submit" id="startBulkBtn" style="margin-top: 1.5rem; width: 100%;" onclick="startBulkProcess()" disabled>Start AI Migration →</button>
+              </div>
+
+              <!-- Right: Live Log -->
+              <div style="padding-left: 2rem;">
+                <div style="display:flex; justify-content: space-between; align-items: baseline;">
+                  <h3 style="font-family:'Cormorant Garamond'; margin-bottom: 1rem;">Processing Log</h3>
+                  <div id="bulkProgressStatus" style="font-size: 0.75rem; color: var(--gold); font-weight: 500;">Ready</div>
+                </div>
+                
+                <div id="bulkLog" style="height: 400px; overflow-y: auto; background: #fff; border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 0.7rem; color: #555; border: 1px solid #eee;">
+                  <div style="color: #999; text-align: center; margin-top: 4rem;">Drop files on the left to begin...</div>
+                </div>
+
+                <div id="bulkProgressBar" style="width: 100%; background: #eee; height: 4px; border-radius: 2px; margin-top: 1rem; overflow: hidden;">
+                  <div id="bulkProgressInner" style="width: 0%; height: 100%; background: var(--gold); transition: width 0.3s ease;"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+    // ═══════════════════════════════════════════════════════════
+    //  D-QueenCart Admin — Fully Dynamic (Firebase-backed)
+    // ═══════════════════════════════════════════════════════════
+
+    const ADMIN_EMAIL = 'admin@D-QueenCart.in';
+    const ADMIN_PASS = 'Priya!@Dharshini#Perumal@30091987%&*';
+    // REMOVE_BG_KEY removed — now using browser-based AI for free unlimited removals
+
+    // ── Cloudinary Config (FREE image hosting — no billing needed) ──────────
+    // 1. Sign up free at https://cloudinary.com
+    // 2. Copy your Cloud Name from the dashboard
+    // 3. Go to Settings → Upload → Upload presets → Add preset → set Signing Mode: Unsigned
+    // 4. Copy the preset name and paste below
+    const CLOUDINARY_CLOUD = 'denvgpdwu';    // e.g. 'dxyz123abc'
+    const CLOUDINARY_PRESET = 'dqueencart_unsigned'; // e.g. 'dqueencart_unsigned'
+    const CLOUDINARY_API_KEY = '688671146632711'; // FILL THIS TO ENABLE DELETION
+    const CLOUDINARY_API_SECRET = 'Ld86aKhw2w8CDh91DhyIqG0m_Ik'; // FILL THIS TO ENABLE DELETION
+    const CLOUDINARY_OK = () => CLOUDINARY_CLOUD !== 'YOUR_CLOUD_NAME' && CLOUDINARY_PRESET !== 'YOUR_UPLOAD_PRESET';
+
+    let allOrders = [];
+    let allProducts = [];
+    let allUsers = [];
+    let editingId = null;
+    let uploadedData = null;
+    let editUploadedData = null; // for edit modal
+    let rChart, sChart;
+
+    const dbOk = () => typeof db !== 'undefined' && db;
+
+    // ── Auth ──────────────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      const hasAdminSession = sessionStorage.getItem('D-QueenCart_admin') === '1';
+      const storedUser = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
+      const hasAdminLocal = storedUser && storedUser.role === 'admin';
+
+      if (hasAdminSession || hasAdminLocal) {
+        // Ensure sessionStorage is always in sync when localStorage has admin role
+        if (hasAdminLocal && !hasAdminSession) {
+          sessionStorage.setItem('D-QueenCart_admin', '1');
+        }
+        // Also verify with Firebase auth if available
+        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
+          firebase.auth().onAuthStateChanged(u => {
+            if (u && u.email === ADMIN_EMAIL) {
+              sessionStorage.setItem('D-QueenCart_admin', '1');
+              // Update sidebar avatar with user name
+              const sName = document.querySelector('.s-name');
+              if (sName) sName.textContent = u.displayName || 'Admin';
+            }
+          });
+        }
+        initDashboard();
+        loadGroqKey();
+      } else {
+        window.location.replace('auth.html');
+      }
+    });
+
+    function logout() {
+      if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
+        firebase.auth().signOut().catch(() => { });
+      }
+      sessionStorage.removeItem('D-QueenCart_admin');
+      localStorage.removeItem('dqueencart_user');
+      window.location.href = 'auth.html';
+    }
+
+    // ── Panel nav ─────────────────────────────────────────────
+    function showPanel(name, el) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('panel-' + name).classList.add('active');
+      if (el) el.classList.add('active');
+      const titles = { dashboard: 'Dashboard', orders: 'Orders', products: 'Products', addProduct: 'Add Product', users: 'Customers', bulkAI: 'AI Bulk Migration' };
+      document.getElementById('panelTitle').textContent = titles[name] || name;
+      if (name === 'orders') renderOrdersPanel();
+      if (name === 'products') renderProds();
+      if (name === 'users') renderUsersPanel();
+      if (name === 'dashboard') refreshStats();
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  INIT — load all collections concurrently
+    // ═══════════════════════════════════════════════════════════
+    async function initDashboard() {
+      try {
+        // Use a 5s timeout for fetching data so UI doesn't hang forever
+        await Promise.race([
+          Promise.all([fetchOrders(), fetchProducts(), fetchUsers()]),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Init Timed Out')), 5000))
+        ]);
+      } catch (e) {
+        console.warn('Dashboard init using existing/local data:', e.message);
+      }
+      refreshStats();
+    }
+
+    async function fetchOrders() {
+      if (!dbOk()) return;
+      try {
+        const snap = await db.collection('orders').orderBy('createdAt', 'desc').get();
+        allOrders = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+      } catch (e) { console.warn('orders:', e.message); }
+    }
+    async function fetchProducts() {
+      const loc = JSON.parse(localStorage.getItem('dqueencart_products') || '[]');
+      if (loc.length) allProducts = loc;
+      if (!dbOk()) return;
+      try {
+        const snap = await db.collection('products').orderBy('createdAt', 'desc').get();
+        if (snap.docs.length > 0) {
+          allProducts = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+          localStorage.setItem('dqueencart_products', JSON.stringify(allProducts));
+        }
+      } catch (e) { console.warn('products (using local fallback):', e.message); }
+    }
+    async function fetchUsers() {
+      if (!dbOk()) return;
+      try {
+        const snap = await db.collection('users').orderBy('createdAt', 'desc').get();
+        allUsers = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+      } catch (e) { console.warn('users:', e.message); }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  DASHBOARD — live computed stats + charts
+    // ═══════════════════════════════════════════════════════════
+    function refreshStats() {
+      const nonCancelled = allOrders.filter(o => o.status !== 'cancelled');
+      const revenue = nonCancelled.reduce((a, o) => a + Number(o.total || 0), 0);
+      const pending = allOrders.filter(o => o.status === 'pending').length;
+      const delivered = allOrders.filter(o => o.status === 'delivered').length;
+      const outOfStock = allProducts.filter(p => Number(p.stock) === 0).length;
+
+      document.getElementById('sRevenue').textContent = '₹' + revenue.toLocaleString();
+      document.getElementById('sRevSub').textContent = delivered + ' orders delivered';
+      document.getElementById('sOrders').textContent = allOrders.length;
+      document.getElementById('sOrdSub').textContent = pending + ' pending';
+      document.getElementById('sUsers').textContent = allUsers.length;
+      document.getElementById('sUserSub').textContent = 'Registered customers';
+      document.getElementById('sProds').textContent = allProducts.length;
+      document.getElementById('sProdSub').textContent = outOfStock > 0 ? outOfStock + ' out of stock' : 'All in stock';
+
+      // Pending pill in sidebar
+      const pill = document.getElementById('pendingPill');
+      const dot = document.getElementById('notifDot');
+      if (pending > 0) { pill.textContent = pending; pill.style.display = 'inline-block'; dot.style.display = 'block'; }
+      else { pill.style.display = 'none'; dot.style.display = 'none'; }
+
+      renderRecentOrders();
+      buildCharts();
+    }
+
+    function renderRecentOrders() {
+      const body = document.getElementById('recentBody');
+      const rows = allOrders.slice(0, 8);
+      if (!rows.length) { body.innerHTML = '<tr><td colspan="6" class="loading-cell">No orders yet.</td></tr>'; return; }
+      body.innerHTML = rows.map(o => `
+    <tr>
+      <td><strong>${o._id.slice(-6).toUpperCase()}</strong></td>
+      <td>${(o.customer && o.customer.name) || o.customer || '—'}</td>
+      <td>${itemsSummary(o.items)}</td>
+      <td>₹${Number(o.total || 0).toLocaleString()}</td>
+      <td><span class="badge ${o.status || 'pending'}">${o.status || 'pending'}</span></td>
+      <td><span class="badge ${o.paymentStatus || 'unpaid'}" onclick="togglePayment('${o._id}', event)">${(o.paymentMethod || 'COD')}: ${cap(o.paymentStatus || 'unpaid')}</span></td>
+      <td>${fmtDate(o.createdAt)}</td>
+    </tr>`).join('');
+    }
+
+    function buildCharts() {
+      const pal = ['#c9a96e', '#e8d5b0', '#b8905e', '#d4b882', '#a07040', '#c0a060'];
+
+      // Revenue by category
+      const catRev = {};
+      allOrders.filter(o => o.status !== 'cancelled').forEach(o => {
+        (o.items || []).forEach(it => { const c = it.category || 'other'; catRev[c] = (catRev[c] || 0) + Number(it.price || 0) * Number(it.qty || 1); });
+      });
+      const cLabels = Object.keys(catRev).map(c => c.charAt(0).toUpperCase() + c.slice(1));
+      const cVals = Object.values(catRev);
+
+      if (rChart) rChart.destroy();
+      try {
+        rChart = new Chart(document.getElementById('revenueChart'), {
+          type: 'bar',
+          data: { labels: cLabels.length ? cLabels : ['No data'], datasets: [{ label: '₹', data: cVals.length ? cVals : [0], backgroundColor: pal, borderWidth: 0, borderRadius: 2 }] },
+          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#f0ebe2' }, ticks: { color: '#7a6f63', callback: v => '₹' + v.toLocaleString() } } } }
+        });
+      } catch { }
+
+      // Orders by status
+      const stCounts = { pending: 0, confirmed: 0, shipped: 0, delivered: 0, cancelled: 0 };
+      allOrders.forEach(o => { if (stCounts[o.status] !== undefined) stCounts[o.status]++; });
+      const sL = Object.keys(stCounts).filter(k => stCounts[k] > 0).map(k => k.charAt(0).toUpperCase() + k.slice(1));
+      const sV = Object.keys(stCounts).filter(k => stCounts[k] > 0).map(k => stCounts[k]);
+
+      if (sChart) sChart.destroy();
+      try {
+        sChart = new Chart(document.getElementById('statusChart'), {
+          type: 'doughnut',
+          data: { labels: sL.length ? sL : ['No Orders'], datasets: [{ data: sV.length ? sV : [1], backgroundColor: pal, borderWidth: 0 }] },
+          options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#7a6f63', font: { size: 11 } } } } }
+        });
+      } catch { }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  ORDERS — live status updates + delete
+    // ═══════════════════════════════════════════════════════════
+    function renderOrdersPanel(list) {
+      const data = list || allOrders;
+      document.getElementById('orderCount').textContent = allOrders.length;
+      const body = document.getElementById('ordersBody');
+      if (!data.length) { body.innerHTML = '<tr><td colspan="8" class="loading-cell">No orders found.</td></tr>'; return; }
+      body.innerHTML = data.map(o => `
+    <tr>
+      <td><strong>${o._id.slice(-6).toUpperCase()}</strong></td>
+      <td>${(o.customer && o.customer.name) || o.customer || '—'}</td>
+      <td>${(o.customer && o.customer.phone) || o.phone || '—'}</td>
+      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${itemsSummary(o.items)}</td>
+      <td><strong>₹${Number(o.total || 0).toLocaleString()}</strong></td>
+      <td>
+        <select class="status-sel" onchange="updateStatus('${o._id}',this.value)">
+          ${['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'].map(s => `<option value="${s}"${o.status === s ? ' selected' : ''}>${cap(s)}</option>`).join('')}
+        </select>
+      </td>
+      <td>
+        <span class="badge ${o.paymentStatus || 'unpaid'}" onclick="togglePayment('${o._id}')" title="Click to toggle payment status">
+          ${o.paymentMethod || 'COD'}: ${cap(o.paymentStatus || 'unpaid')}
+        </span>
+      </td>
+      <td>${fmtDate(o.createdAt)}</td>
+      <td><button class="btn-del" onclick="delOrder('${o._id}')">Del</button></td>
+    </tr>`).join('');
+    }
+
+    function filterOrders() {
+      const status = document.getElementById('ordStatusFilter').value;
+      const q = document.getElementById('ordSearch').value.toLowerCase();
+      let f = status ? allOrders.filter(o => o.status === status) : [...allOrders];
+      if (q) f = f.filter(o => ((o.customer && o.customer.name) || o.customer || '').toLowerCase().includes(q));
+      renderOrdersPanel(f);
+    }
+
+    async function updateStatus(id, val) {
+      if (!dbOk()) { toast('Firebase not connected', 'bad'); return; }
+      try {
+        await db.collection('orders').doc(id).update({ status: val, updatedAt: new Date().toISOString() });
+        const o = allOrders.find(x => x._id === id); if (o) o.status = val;
+        // Update pending pill
+        const p = allOrders.filter(o => o.status === 'pending').length;
+        const pill = document.getElementById('pendingPill');
+        pill.textContent = p; pill.style.display = p > 0 ? 'inline-block' : 'none';
+        toast('Status → ' + cap(val), 'ok');
+      } catch (e) { toast('Update failed: ' + e.message, 'bad'); }
+    }
+
+    async function togglePayment(id, e) {
+      if (e) e.stopPropagation();
+      if (!dbOk()) { toast('Firebase not connected', 'bad'); return; }
+      const o = allOrders.find(x => x._id === id);
+      if (!o) return;
+
+      const newStatus = (o.paymentStatus === 'paid') ? 'unpaid' : 'paid';
+      try {
+        await db.collection('orders').doc(id).update({ paymentStatus: newStatus });
+        o.paymentStatus = newStatus;
+        renderOrdersPanel();
+        renderRecentOrders();
+        toast('Payment → ' + cap(newStatus), 'ok');
+      } catch (e) { toast('Update failed: ' + e.message, 'bad'); }
+    }
+
+    async function delOrder(id) {
+      if (!confirm('Delete this order permanently?')) return;
+      if (!dbOk()) { toast('Firebase not connected', 'bad'); return; }
+      try {
+        await db.collection('orders').doc(id).delete();
+        allOrders = allOrders.filter(o => o._id !== id);
+        renderOrdersPanel(); refreshStats();
+        toast('Order deleted', 'ok');
+      } catch (e) { toast('Delete failed: ' + e.message, 'bad'); }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  PRODUCTS — full CRUD
+    // ═══════════════════════════════════════════════════════════
+    function renderProds(list) {
+      const data = list || allProducts;
+      document.getElementById('prodCount').textContent = allProducts.length;
+      const grid = document.getElementById('prodGrid');
+      if (!data.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--muted)"><div style="font-size:3rem;opacity:.2;margin-bottom:1rem">💎</div><p>No products yet. Add your first one!</p></div>';
+        return;
+      }
+      grid.innerHTML = data.map(p => `
+    <div class="prod-card">
+      <img src="${p.image || 'https://images.unsplash.com/photo-1599643471487-463d1a8e10b1?w=400&q=80'}"
+           alt="${p.name || ''}"
+           onerror="this.src='https://images.unsplash.com/photo-1599643471487-463d1a8e10b1?w=400&q=80'"
+           loading="lazy"/>
+      <div class="prod-info">
+        <div class="prod-name" title="${p.name || ''}">${p.name || 'Unnamed'}</div>
+        <div class="prod-meta">${cap(p.category || '—')} ${p.badge ? '· <b>' + p.badge + '</b>' : ''}</div>
+        <div class="prod-price">₹${Number(p.price || 0).toLocaleString()}${p.oldPrice ? ' <span style="text-decoration:line-through;color:var(--muted);font-size:.75rem">₹' + Number(p.oldPrice).toLocaleString() + '</span>' : ''}</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:.6rem">Stock: ${p.stock != null ? p.stock : '—'}</div>
+        <div class="prod-actions">
+          <button class="btn-edit" onclick="openEdit('${p._id}')">Edit</button>
+          <button class="btn-del"  onclick="delProduct('${p._id}')">Del</button>
+        </div>
+      </div>
+    </div>`).join('');
+    }
+
+    function filterProducts() {
+      const cat = document.getElementById('prodCatFilter').value;
+      const q = document.getElementById('prodSearch').value.toLowerCase();
+      let f = cat ? allProducts.filter(p => p.category === cat) : [...allProducts];
+      if (q) f = f.filter(p => (p.name || '').toLowerCase().includes(q));
+      renderProds(f);
+    }
+
+    async function addProduct() {
+      const name = document.getElementById('pName').value.trim();
+      const cat = document.getElementById('pCat').value;
+      const price = document.getElementById('pPrice').value;
+
+      // Clear errors
+      ['pNameErr', 'pCatErr', 'pPriceErr'].forEach(id => document.getElementById(id).classList.remove('show'));
+      ['pName', 'pCat', 'pPrice'].forEach(id => document.getElementById(id).classList.remove('err'));
+      let ok = true;
+      if (!name) { document.getElementById('pNameErr').classList.add('show'); document.getElementById('pName').classList.add('err'); ok = false; }
+      if (!cat) { document.getElementById('pCatErr').classList.add('show'); document.getElementById('pCat').classList.add('err'); ok = false; }
+      if (!price || Number(price) <= 0) { document.getElementById('pPriceErr').classList.add('show'); document.getElementById('pPrice').classList.add('err'); ok = false; }
+      if (!ok) return;
+
+      const btn = document.getElementById('addBtn');
+      btn.disabled = true; btn.textContent = 'Uploading image…';
+
+      // ── Step 1: Resolve final image URL ────────────────────────────────────
+      let finalImgUrl = document.getElementById('pImgUrl').value.trim();
+
+      // If a Cloudinary URL was already set during file pick, use it
+      if (!finalImgUrl && uploadedData && uploadedData.startsWith('https://res.cloudinary.com')) {
+        finalImgUrl = uploadedData;
+      }
+
+      // If we still have a raw base64/blob (fallback path), try Cloudinary now
+      if (!finalImgUrl && uploadedData && CLOUDINARY_OK()) {
+        btn.textContent = 'Uploading image…';
+        try {
+          const res = await fetch(uploadedData);
+          const blob = await res.blob();
+          const fd = new FormData();
+          fd.append('file', blob);
+          fd.append('upload_preset', CLOUDINARY_PRESET);
+          fd.append('folder', 'dqueencart-products');
+          const up = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: fd });
+          const json = await up.json();
+          if (json.secure_url) finalImgUrl = json.secure_url;
+          else throw new Error(json.error?.message || 'Upload failed');
+        } catch (uploadErr) {
+          toast('Cloudinary upload failed: ' + uploadErr.message, 'bad');
+          btn.disabled = false; btn.textContent = 'Save Product →';
+          return;
+        }
+        btn.textContent = 'Saving…';
+      }
+
+      if (!finalImgUrl && uploadedData) finalImgUrl = uploadedData; // absolute last resort (base64)
+      if (!finalImgUrl) finalImgUrl = 'https://images.unsplash.com/photo-1599643471487-463d1a8e10b1?w=400&q=80';
+
+      // ── Step 2: Build Firestore-safe product doc (URL only, no base64) ──
+      btn.textContent = 'Saving…';
+      const prod = {
+        name, category: cat,
+        price: Number(price),
+        oldPrice: Number(document.getElementById('pOldPrice').value) || null,
+        badge: document.getElementById('pBadge').value || null,
+        stock: Number(document.getElementById('pStock').value) || 0,
+        image: finalImgUrl,
+        createdAt: new Date().toISOString()
+      };
+
+      // ── Step 3: Save to Firestore (10s timeout) ──────────────
+      try {
+        if (dbOk()) {
+          const ref = await Promise.race([
+            db.collection('products').add(prod),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Firestore timed out — check Firestore Security Rules (allow write: if true)')), 10000)
+            )
+          ]);
+          prod._id = ref.id;
+          toast('✓ Product saved to Firebase!', 'ok');
+        } else {
+          throw new Error('Firebase not connected');
+        }
+      } catch (e) {
+        console.warn('Firestore save failed:', e.message);
+        prod._id = 'local_' + Date.now();
+        toast('⚠ Firebase failed: ' + e.message, 'bad');
+      }
+
+      // ── Step 4: Update local cache & reset form ────────────────
+      allProducts.unshift(prod);
+      localStorage.setItem('dqueencart_products', JSON.stringify(allProducts));
+      ['pName', 'pPrice', 'pOldPrice', 'pStock', 'pImgUrl'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('pCat').value = '';
+      document.getElementById('pBadge').value = '';
+      document.getElementById('imgPreview').style.display = 'none';
+      document.getElementById('rmbgBtn').style.display = 'none';
+      const imageFileEl = document.getElementById('imageFile');
+      if (imageFileEl) imageFileEl.value = '';
+      uploadedData = null;
+      document.getElementById('sProds').textContent = allProducts.length;
+      setTimeout(() => showPanel('products', document.querySelector('[onclick*=products]')), 800);
+      btn.disabled = false; btn.textContent = 'Save Product →';
+    }
+
+    // ── Edit Modal ────────────────────────────────────────────
+    function openEdit(id) {
+      const p = allProducts.find(x => x._id === id); if (!p) return;
+      editingId = id;
+      document.getElementById('eName').value = p.name || '';
+      document.getElementById('eCat').value = p.category || '';
+      document.getElementById('ePrice').value = p.price || '';
+      document.getElementById('eOldPrice').value = p.oldPrice || '';
+      document.getElementById('eBadge').value = p.badge || '';
+      document.getElementById('eStock').value = p.stock != null ? p.stock : '';
+      document.getElementById('eImg').value = p.image || '';
+
+      // Reset upload state
+      editUploadedData = null;
+      const fileInput = document.getElementById('eImageFile');
+      if (fileInput) fileInput.value = '';
+      const rmbgBtn = document.getElementById('eRmbgBtn');
+      if (rmbgBtn) rmbgBtn.style.display = 'none';
+
+      const pr = document.getElementById('eImgPrev');
+      const rmBtn = document.getElementById('eRmImgBtn');
+      if (p.image) { 
+        pr.src = p.image; pr.style.display = 'block'; 
+        if (rmBtn) rmBtn.style.display = 'block';
+      } else { 
+        pr.style.display = 'none'; 
+        if (rmBtn) rmBtn.style.display = 'none';
+      }
+      document.getElementById('editModal').classList.add('show');
+    }
+    function closeEditModal() { document.getElementById('editModal').classList.remove('show'); editingId = null; }
+    function eImgPreview(url) { const pr = document.getElementById('eImgPrev'); if (url) { pr.src = url; pr.style.display = 'block'; } else pr.style.display = 'none'; }
+
+    async function saveEdit() {
+      if (!editingId) return;
+      const name = document.getElementById('eName').value.trim();
+      const price = document.getElementById('ePrice').value;
+      if (!name || !price) { toast('Name and price required', 'bad'); return; }
+
+      const btn = document.getElementById('eSaveBtn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+
+      const oldProd = allProducts.find(x => x._id === editingId);
+      const oldImg = oldProd ? oldProd.image : null;
+      let finalImgUrl = document.getElementById('eImg').value.trim();
+
+      // Upload new image if provided
+      if (editUploadedData && editUploadedData.startsWith('data:image')) {
+        btn.textContent = 'Uploading new image…';
+        try {
+          const res = await fetch(editUploadedData);
+          const blob = await res.blob();
+          const fd = new FormData();
+          fd.append('file', blob);
+          fd.append('upload_preset', CLOUDINARY_PRESET);
+          fd.append('folder', 'dqueencart-products');
+          const up = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: fd });
+          const json = await up.json();
+          if (json.secure_url) finalImgUrl = json.secure_url;
+        } catch (err) {
+          toast('Upload failed, using URL instead', 'bad');
+        }
+      }
+
+      const upd = {
+        name, category: document.getElementById('eCat').value,
+        price: Number(price),
+        oldPrice: Number(document.getElementById('eOldPrice').value) || null,
+        badge: document.getElementById('eBadge').value || null,
+        stock: Number(document.getElementById('eStock').value) || 0,
+        image: finalImgUrl,
+        updatedAt: new Date().toISOString()
+      };
+
+      try {
+        if (dbOk()) {
+          await db.collection('products').doc(editingId).update(upd);
+        }
+
+        // Deletion logic
+        if (oldImg && oldImg !== finalImgUrl) {
+          deleteCloudinaryImage(oldImg);
+        }
+
+        const idx = allProducts.findIndex(p => p._id === editingId);
+        if (idx > -1) allProducts[idx] = { ...allProducts[idx], ...upd };
+        localStorage.setItem('dqueencart_products', JSON.stringify(allProducts));
+        closeEditModal(); renderProds(); toast('Product updated!', 'ok');
+      } catch (e) {
+        toast('Update failed: ' + e.message, 'bad');
+      }
+      btn.disabled = false; btn.textContent = 'Save Changes';
+    }
+
+    async function delProduct(id) {
+      if (!confirm('Delete this product permanently?')) return;
+      const p = allProducts.find(x => x._id === id);
+      const img = p ? p.image : null;
+
+      if (dbOk()) {
+        // Firebase connected — must succeed in Firestore before touching local state
+        try {
+          await db.collection('products').doc(id).delete();
+          if (img) deleteCloudinaryImage(img);
+        } catch (e) {
+          // Surface the real error (most commonly: permission denied / not signed in)
+          toast('❌ Delete failed: ' + (e.message || 'Permission denied. Please sign in as admin.'), 'bad');
+          return; // ← stop here; don't touch local cache
+        }
+      } else {
+        // No Firebase — allow local-only delete
+        if (img) deleteCloudinaryImage(img);
+      }
+
+      // Only reached if Firestore delete succeeded (or Firebase unavailable)
+      allProducts = allProducts.filter(x => x._id !== id);
+      localStorage.setItem('dqueencart_products', JSON.stringify(allProducts));
+      renderProds();
+      document.getElementById('sProds').textContent = allProducts.length;
+      toast('✓ Product deleted', 'ok');
+    }
+
+    async function deleteCloudinaryImage(url) {
+      if (!url || !url.includes('cloudinary.com')) return;
+      if (!CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) return;
+
+      try {
+        // Extract public_id: handles /upload/v12345/folder/id.jpg
+        const regex = /\/upload\/(?:v\d+\/)?(.+)\.[a-z]+$/i;
+        const match = url.match(regex);
+        if (!match) return;
+        const publicId = match[1];
+
+        const timestamp = Math.round(new Date().getTime() / 1000);
+        const str = `public_id=${publicId}&timestamp=${timestamp}${CLOUDINARY_API_SECRET}`;
+        const signature = CryptoJS.SHA1(str).toString();
+
+        const fd = new FormData();
+        fd.append('public_id', publicId);
+        fd.append('timestamp', timestamp);
+        fd.append('api_key', CLOUDINARY_API_KEY);
+        fd.append('signature', signature);
+
+        await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/destroy`, { method: 'POST', body: fd });
+      } catch (err) { console.error('Cloudinary delete err:', err); }
+    }
+
+    // ── Image Upload → Cloudinary ─────────────────────────────
+    async function handleUpload(input) {
+      const file = input.files[0]; if (!file) return;
+      if (file.size > 10 * 1024 * 1024) { toast('Max file size is 10MB', 'bad'); return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        const pr = document.getElementById('imgPreview');
+        pr.src = e.target.result; pr.style.display = 'block';
+        document.getElementById('rmbgBtn').style.display = 'block';
+        uploadedData = e.target.result;
+        document.getElementById('pImgUrl').value = '';
+        toast('✓ Image ready', 'ok');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function handleEditUpload(input) {
+      const file = input.files[0]; if (!file) return;
+      if (file.size > 10 * 1024 * 1024) { toast('Max file size is 10MB', 'bad'); return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        const pr = document.getElementById('eImgPrev');
+        pr.src = e.target.result; pr.style.display = 'block';
+        document.getElementById('eRmbgBtn').style.display = 'block';
+        const rmBtn = document.getElementById('eRmImgBtn');
+        if (rmBtn) rmBtn.style.display = 'block';
+        editUploadedData = e.target.result;
+        document.getElementById('eImg').value = '';
+        toast('✓ New image ready', 'ok');
+      };
+      reader.readAsDataURL(file);
+    }
+    function removeEditImage() {
+      document.getElementById('eImg').value = '';
+      editUploadedData = null;
+      document.getElementById('eImgPrev').style.display = 'none';
+      document.getElementById('eRmImgBtn').style.display = 'none';
+      document.getElementById('eRmbgBtn').style.display = 'none';
+      const fileInput = document.getElementById('eImageFile');
+      if (fileInput) fileInput.value = '';
+      toast('Image marked for removal', 'ok');
+    }
+
+    function previewUrl(url) {
+      const pr = document.getElementById('imgPreview');
+      if (url) { pr.src = url; pr.style.display = 'block'; } else pr.style.display = 'none';
+      uploadedData = null;
+    }
+
+    // ── Background Removal — Local GPU Server (bg_server.py) ──
+    // Calls http://localhost:7788 which runs rembg with your GPU.
+    // Completely free, unlimited, and much faster than browser AI.
+    const BG_SERVER = 'http://localhost:7788';
+
+    async function checkBgServer() {
+      try {
+        const r = await fetch(BG_SERVER + '/ping', { signal: AbortSignal.timeout(1500) });
+        return r.ok;
+      } catch { return false; }
+    }
+
+    async function removeBackground() {
+      const btn = document.getElementById('rmbgBtn');
+      const statusEl = document.getElementById('rmbgStatus');
+      btn.disabled = true;
+      btn.textContent = '⏳ Checking server…';
+      statusEl.style.display = 'block';
+
+      const serverUp = await checkBgServer();
+      if (!serverUp) {
+        statusEl.innerHTML = '⚠️ Local server not running.<br>Open a terminal and run: <code style="background:#f0ebe2;padding:1px 5px">python bg_server.py</code>';
+        statusEl.style.color = '#c0392b';
+        btn.textContent = '✨ Remove Background (GPU)';
+        btn.disabled = false;
+        return;
+      }
+      statusEl.textContent = '✓ Server connected — processing…';
+      statusEl.style.color = 'var(--success)';
+
+      try {
+        const source = uploadedData || document.getElementById('pImgUrl').value.trim();
+        if (!source) { toast('Upload or paste an image URL first', 'bad'); btn.disabled = false; btn.textContent = '✨ Remove Background (GPU)'; return; }
+
+        // Convert to base64 if it's a URL
+        let b64 = source;
+        if (source.startsWith('http')) {
+          const resp = await fetch(source);
+          const blob = await resp.blob();
+          b64 = await new Promise(r => { const fr = new FileReader(); fr.onloadend = () => r(fr.result); fr.readAsDataURL(blob); });
+        }
+
+        btn.textContent = '⏳ Removing background…';
+        const res = await fetch(BG_SERVER + '/remove-bg', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: b64 })
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error || 'Server error');
+
+        document.getElementById('imgPreview').src = json.image;
+        uploadedData = json.image;
+        statusEl.textContent = '✓ Background removed!';
+        toast('✓ Background removed!', 'ok');
+      } catch (e) {
+        statusEl.textContent = 'Error: ' + e.message;
+        statusEl.style.color = '#c0392b';
+        toast('Failed: ' + e.message, 'bad');
+      }
+      btn.textContent = '✨ Remove Background (GPU)';
+      btn.disabled = false;
+    }
+
+    async function eRemoveBackground() {
+      const btn = document.getElementById('eRmbgBtn');
+      const statusEl = document.getElementById('eRmbgStatus');
+      btn.disabled = true;
+      btn.textContent = '⏳ Checking server…';
+      statusEl.style.display = 'block';
+
+      const serverUp = await checkBgServer();
+      if (!serverUp) {
+        statusEl.innerHTML = '⚠️ Local server not running.<br>Open a terminal and run: <code style="background:#f0ebe2;padding:1px 5px">python bg_server.py</code>';
+        statusEl.style.color = '#c0392b';
+        btn.textContent = '✨ Remove Background (GPU)';
+        btn.disabled = false;
+        return;
+      }
+      statusEl.textContent = '✓ Server connected — processing…';
+      statusEl.style.color = 'var(--success)';
+
+      try {
+        const urlV = document.getElementById('eImg').value.trim();
+        const source = editUploadedData || urlV;
+        if (!source) { toast('Upload or paste an image URL first', 'bad'); btn.disabled = false; btn.textContent = '✨ Remove Background (GPU)'; return; }
+
+        let b64 = source;
+        if (source.startsWith('http')) {
+          const resp = await fetch(source);
+          const blob = await resp.blob();
+          b64 = await new Promise(r => { const fr = new FileReader(); fr.onloadend = () => r(fr.result); fr.readAsDataURL(blob); });
+        }
+
+        btn.textContent = '⏳ Removing background…';
+        const res = await fetch(BG_SERVER + '/remove-bg', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: b64 })
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error || 'Server error');
+
+        document.getElementById('eImgPrev').src = json.image;
+        document.getElementById('eImgPrev').style.display = 'block';
+        const rmBtn = document.getElementById('eRmImgBtn');
+        if (rmBtn) rmBtn.style.display = 'block';
+        editUploadedData = json.image;
+        statusEl.textContent = '✓ Background removed!';
+        toast('✓ Background removed!', 'ok');
+      } catch (e) {
+        statusEl.textContent = 'Error: ' + e.message;
+        statusEl.style.color = '#c0392b';
+        toast('Failed: ' + e.message, 'bad');
+      }
+      btn.textContent = '✨ Remove Background (GPU)';
+      btn.disabled = false;
+    }
+
+    // ── AI Bulk Migration Center ─────────────────────────────
+    let bulkFileQueue = [];
+
+    function saveGroqKey() {
+      const key = document.getElementById('groqKey').value.trim();
+      if (!key) { toast('Please enter a Groq API key', 'bad'); return; }
+      localStorage.setItem('dqueencart_groq_key', key);
+      toast('✓ Groq Key saved locally', 'ok');
+    }
+
+    function loadGroqKey() {
+      const k = localStorage.getItem('dqueencart_groq_key');
+      if (k) document.getElementById('groqKey').value = k;
+    }
+
+    function handleBulkSelect(input) {
+      bulkFileQueue = Array.from(input.files);
+      const btn = document.getElementById('startBulkBtn');
+      const log = document.getElementById('bulkLog');
+      
+      if (bulkFileQueue.length > 0) {
+        log.innerHTML = `<div style="color:var(--dark)">✓ ${bulkFileQueue.length} files selected. Ready to process.</div>`;
+        btn.disabled = false;
+      } else {
+        log.innerHTML = `<div style="color: #999; text-align: center; margin-top: 4rem;">Drop files on the left to begin...</div>`;
+        btn.disabled = true;
+      }
+    }
+
+    function bulkLog(msg, type = 'info') {
+      const log = document.getElementById('bulkLog');
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const color = type === 'error' ? '#c0392b' : (type === 'success' ? '#27ae60' : '#555');
+      log.innerHTML += `<div style="color:${color}; margin-bottom: 0.4rem;">[${time}] ${msg}</div>`;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // ── Bulk Remove BG toggle helper ─────────────────────────
+    function onBulkRemoveBgToggle(checkbox) {
+      const track = document.getElementById('bulkRemoveBgTrack');
+      const thumb = document.getElementById('bulkRemoveBgThumb');
+      const statusEl = document.getElementById('bulkRmbgStatus');
+      if (checkbox.checked) {
+        track.style.background = 'var(--gold)';
+        thumb.style.transform = 'translateX(20px)';
+        statusEl.style.display = 'block';
+        statusEl.textContent = '⏳ Checking bg_server…';
+        statusEl.style.color = 'var(--muted)';
+        checkBgServer().then(up => {
+          if (up) {
+            statusEl.textContent = '✓ Server ready — backgrounds will be removed for each image';
+            statusEl.style.color = '#27ae60';
+          } else {
+            statusEl.innerHTML = '⚠️ Server offline. Run <code style="background:#f0ebe2;padding:1px 4px;">python bg_server.py</code> first';
+            statusEl.style.color = '#c0392b';
+          }
+        });
+      } else {
+        track.style.background = '#ccc';
+        thumb.style.transform = 'translateX(0)';
+        statusEl.style.display = 'none';
+      }
+    }
+
+    async function startBulkProcess() {
+      const key = localStorage.getItem('dqueencart_groq_key');
+      if (!key) { toast('Please save your Groq API Key first', 'bad'); return; }
+
+      const price = Number(document.getElementById('bulkPrice').value);
+      const oldPrice = Number(document.getElementById('bulkOldPrice').value) || null;
+      const stock = Number(document.getElementById('bulkStock').value) || 50;
+      const categoryOverride = document.getElementById('bulkCategoryOverride').value;
+      const doRemoveBg = document.getElementById('bulkRemoveBg').checked;
+
+      if (!price || price <= 0) { toast('Please enter a valid Batch Price', 'bad'); return; }
+      if (bulkFileQueue.length === 0) return;
+
+      // Pre-flight check: verify bg_server is up if Remove BG is enabled
+      if (doRemoveBg) {
+        const serverUp = await checkBgServer();
+        if (!serverUp) {
+          toast('⚠️ bg_server.py is not running! Disable Remove BG or start the server.', 'bad');
+          const statusEl = document.getElementById('bulkRmbgStatus');
+          statusEl.innerHTML = '⚠️ Server offline. Run <code style="background:#f0ebe2;padding:1px 4px;">python bg_server.py</code> first';
+          statusEl.style.color = '#c0392b';
+          statusEl.style.display = 'block';
+          return;
+        }
+      }
+
+      const btn = document.getElementById('startBulkBtn');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+      document.getElementById('bulkProgressStatus').textContent = 'In Progress';
+      
+      const total = bulkFileQueue.length;
+      let successCount = 0;
+
+      for (let i = 0; i < total; i++) {
+        const file = bulkFileQueue[i];
+        const progress = Math.round(((i) / total) * 100);
+        document.getElementById('bulkProgressInner').style.width = progress + '%';
+        
+        bulkLog(`--- Processing Item ${i + 1}/${total}: ${file.name} ---`);
+        
+        try {
+          // 1. Get local image base64
+          const base64Data = await getBase64FromFile(file);
+
+          // 2. AI Analysis via Groq Llama 3
+          bulkLog(`Analyzing image with Groq AI...`);
+          let aiData = null;
+          let retryCount = 0;
+          let maxRetries = 3;
+
+          while (retryCount < maxRetries) {
+            try {
+              aiData = await callGroqAI(base64Data, file.type || 'image/jpeg', key, categoryOverride);
+              break; 
+            } catch (aiErr) {
+               const errMsg = aiErr.message || '';
+               if (errMsg.includes('429') || errMsg.includes('rate limit')) {
+                  let waitTime = 6000;
+                  bulkLog(`⚠️ Rate limited. Waiting ${Math.round(waitTime/1000)}s before retry...`, 'error');
+                  await new Promise(r => setTimeout(r, waitTime));
+                  retryCount++;
+                  if (retryCount >= maxRetries) throw new Error("Max retries reached for Groq AI");
+                  bulkLog(`Retrying AI Analysis (${retryCount}/${maxRetries})...`);
+               } else {
+                  throw aiErr;
+               }
+            }
+          }
+          
+          if (categoryOverride !== 'auto') {
+             aiData.category = categoryOverride;
+          }
+          
+          bulkLog(`✓ AI Result: "${aiData.name}" (${aiData.category})`, 'success');
+
+          // 3. Optional: Remove background via local GPU server
+          let uploadFile = file;
+          if (doRemoveBg) {
+            bulkLog(`✨ Removing background via GPU server...`);
+            try {
+              const b64Full = 'data:' + (file.type || 'image/jpeg') + ';base64,' + base64Data;
+              const bgRes = await fetch(BG_SERVER + '/remove-bg', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: b64Full })
+              });
+              const bgJson = await bgRes.json();
+              if (bgJson.success && bgJson.image) {
+                // Convert base64 data-URL back to a Blob for Cloudinary upload
+                const fetchRes = await fetch(bgJson.image);
+                const blob = await fetchRes.blob();
+                uploadFile = new File([blob], file.name.replace(/\.[^.]+$/, '.png'), { type: 'image/png' });
+                bulkLog(`✓ Background removed!`, 'success');
+              } else {
+                bulkLog(`⚠️ BG removal failed: ${bgJson.error || 'unknown'}. Uploading original.`, 'error');
+              }
+            } catch (bgErr) {
+              bulkLog(`⚠️ BG server error: ${bgErr.message}. Uploading original.`, 'error');
+            }
+          }
+
+          // 4. Upload to Cloudinary ONLY if AI succeeds (saves space!)
+          bulkLog(`Uploading to Cloudinary...`);
+          const cloudinaryUrl = await uploadToCloudinaryBulk(uploadFile);
+          bulkLog(`✓ Uploaded to Cloudinary`, 'success');
+
+          // 4. Save to Firestore
+          const badges = ["New", "Hot", "Sale", null];
+          const randomBadge = badges[Math.floor(Math.random() * badges.length)];
+          
+          const prod = {
+            name: aiData.name,
+            category: aiData.category.toLowerCase().replace(/\s+/g, '-'),
+            price: price,
+            oldPrice: oldPrice,
+            badge: randomBadge,
+            stock: stock,
+            image: cloudinaryUrl,
+            createdAt: new Date().toISOString()
+          };
+
+          if (dbOk()) {
+            await db.collection('products').add(prod);
+            bulkLog(`✓ Saved to Database!`, 'success');
+            successCount++;
+          } else {
+            throw new Error('Database not connected');
+          }
+          
+        } catch (err) {
+          bulkLog(`❌ Error processing ${file.name}: ${err.message}`, 'error');
+        }
+
+        // Standard delay between items to avoid instant limits
+        if (i < total - 1) {
+          bulkLog(`Waiting 5s for rate limits...`);
+          await new Promise(r => setTimeout(r, 5000));
+        }
+      }
+
+      document.getElementById('bulkProgressInner').style.width = '100%';
+      document.getElementById('bulkProgressStatus').textContent = 'Completed';
+      bulkLog(`=================================`, 'info');
+      bulkLog(`Migration Complete! ${successCount}/${total} items saved.`, 'success');
+      btn.textContent = 'Migration Finished';
+      
+      fetchProducts(); // Refresh list in background
+      toast(`✓ Bulk Migration Complete (${successCount} items)`, 'ok');
+    }
+
+    async function uploadToCloudinaryBulk(file) {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_PRESET);
+      fd.append('folder', 'dqueencart-products');
+      
+      const up = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: fd });
+      const json = await up.json();
+      if (json.secure_url) return json.secure_url;
+      throw new Error(json.error?.message || 'Cloudinary upload failed');
+    }
+
+    async function callGroqAI(base64Image, mimeType, apiKey, categoryOverride) {
+      const url = `https://api.groq.com/openai/v1/chat/completions`;
+      
+      let promptText = "";
+      if (categoryOverride === 'auto') {
+         promptText = "Analyze this jewellery image. Provide a high-end, luxury product name (3-5 words) and pick exactly one category from this list: necklaces, rings, earrings, studs, bracelets, anklets, bangles, hair-accessories, waist-chains, scrunchies. Format as strict JSON: {\"name\": \"...\", \"category\": \"...\"}. Output only the JSON, nothing else.";
+      } else {
+         promptText = `Analyze this jewellery image. Provide a high-end, luxury product name (3-5 words). The category is strictly '${categoryOverride}'. Format as strict JSON: {"name": "..."}. Output only the JSON, nothing else.`;
+      }
+
+      const payload = {
+        model: "llama-3.2-11b-vision-preview",
+        messages: [{
+          role: "user",
+          content: [
+            { type: "text", text: promptText },
+            { type: "image_url", image_url: { url: `data:${mimeType};base64,${base64Image}` } }
+          ]
+        }],
+        temperature: 0.3
+      };
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const json = await res.json();
+      if (json.error) throw new Error(json.error.message);
+      
+      const text = json.choices[0].message.content;
+      // Extract JSON from the potential Markdown block
+      const match = text.match(/\{.*\}/s);
+      if (!match) throw new Error('AI returned invalid format: ' + text);
+      return JSON.parse(match[0]);
+    }
+
+    async function getBase64FromFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderUsersPanel(list) {
+      const data = list || allUsers;
+      document.getElementById('userCount').textContent = allUsers.length;
+      const body = document.getElementById('usersBody');
+      if (!data.length) { body.innerHTML = '<tr><td colspan="5" class="loading-cell">No customers yet.</td></tr>'; return; }
+      body.innerHTML = data.map(u => `
+    <tr>
+      <td><strong>${u.name || '—'}</strong></td>
+      <td>${u.email || '—'}</td>
+      <td>${u.phone || '—'}</td>
+      <td>${fmtDate(u.createdAt)}</td>
+      <td>${allOrders.filter(o => (o.customer && o.customer.email) === u.email).length}</td>
+    </tr>`).join('');
+    }
+
+    function filterUsers() {
+      const q = document.getElementById('userSearch').value.toLowerCase();
+      const f = q ? allUsers.filter(u => (u.name || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q)) : allUsers;
+      renderUsersPanel(f);
+    }
+
+    // ── Helpers ─────────────────────────────────────────────
+    function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : '—'; }
+    function fmtDate(ts) {
+      if (!ts) return '—';
+      try { const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+      catch { return String(ts).slice(0, 10) || '—'; }
+    }
+    function itemsSummary(items) {
+      if (!items) return '—';
+      if (typeof items === 'string') return items;
+      if (Array.isArray(items)) return items.map(i => (i.name || 'Item') + ' ×' + (i.qty || 1)).join(', ');
+      return '—';
+    }
+    function toast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = 'toast ' + (type || ''); t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), type === 'bad' ? 4000 : 2800);
+    }
+
+    // Init is handled by DOMContentLoaded listener above
+  </script>
+  <script src="luxury-ui.js"></script>
+</body>
+
+</html>
