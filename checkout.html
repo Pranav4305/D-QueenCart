@@ -63,8 +63,13 @@
     .checkout-progress {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 1rem 2rem;
-      margin-top: var(--nav-height, 72px);
+      padding: 0.85rem 2rem;
+      position: fixed;
+      top: 72px;
+      left: 0;
+      right: 0;
+      z-index: 900;
+      box-shadow: 0 2px 8px rgba(26,58,50,0.04);
     }
     .checkout-progress-inner {
       max-width: 1100px;
@@ -130,7 +135,10 @@
     .page-wrapper {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 2.5rem 2rem 6rem;
+      padding: 9rem 2rem 6rem;
+    }
+    @media(max-width:640px) {
+      .checkout-progress { top: 60px; }
     }
     .page-title {
       font-family: 'Playfair Display', serif;
@@ -603,8 +611,8 @@
       .order-summary { position: static; }
     }
     @media(max-width:640px) {
-      .page-wrapper { padding: 1.5rem 1rem 4rem; }
-      .checkout-progress { padding: 0.8rem 1rem; }
+      .page-wrapper { padding: 8rem 1rem 4rem; }
+      .checkout-progress { padding: 0.7rem 1rem; }
       .form-row { grid-template-columns: 1fr; }
       .form-card-body { padding: 1.5rem; }
       .form-card-header { padding: 1.2rem 1.5rem; }
@@ -627,16 +635,24 @@
 </div>
 
 <!-- ======= NAVIGATION ======= -->
-<nav>
-  <div class="menu-toggle" id="menuToggle">
+<nav id="navbar">
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation">
     <span></span><span></span><span></span>
-  </div>
+  </button>
   <a href="index.html" class="nav-logo">D-QueenCart</a>
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="products.html">Collection</a></li>
     <li><a href="cart.html">Cart</a></li>
   </ul>
+  <div class="nav-actions">
+    <a href="auth.html" class="btn-nav" id="navSignIn">Sign In</a>
+    <div id="navUser" style="display:none;align-items:center;gap:0.8rem">
+      <span id="navUserName" style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--dark)"></span>
+      <a href="auth.html" class="btn-nav" style="font-size:0.68rem;padding:0.45rem 1rem">Account</a>
+      <a href="admin.html" class="btn-nav" id="navAdminBtn" style="display:none;font-size:0.68rem;padding:0.45rem 1rem;background:var(--gold);border-color:var(--gold);color:white;">Admin</a>
+    </div>
+  </div>
 </nav>
 
 <!-- ======= PROGRESS INDICATOR ======= -->
@@ -1031,6 +1047,50 @@ if (savedUser) {
     }
   });
 });
+
+// ── Auth nav state ──────────────────────────────────────────
+function applyNavUser(name, isAdmin) {
+  const signInBtn = document.getElementById('navSignIn');
+  const navUser   = document.getElementById('navUser');
+  const adminBtn  = document.getElementById('navAdminBtn');
+  if (signInBtn) signInBtn.style.display = 'none';
+  if (navUser)   { navUser.style.display = 'flex'; }
+  const nameEl = document.getElementById('navUserName');
+  if (nameEl) nameEl.textContent = 'Hi, ' + name.split(' ')[0];
+  if (adminBtn) adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
+}
+
+const _isAdminSession = sessionStorage.getItem('D-QueenCart_admin') === '1';
+if (_isAdminSession) {
+  applyNavUser('Admin', true);
+} else {
+  try {
+    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
+      firebase.auth().onAuthStateChanged(u => {
+        if (u) {
+          const isAdminFb = u.email === 'admin@D-QueenCart.in' || sessionStorage.getItem('D-QueenCart_admin') === '1';
+          applyNavUser(u.displayName || u.email.split('@')[0] || 'User', isAdminFb);
+        } else {
+          const su = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
+          if (su && su.name) applyNavUser(su.name, su.role === 'admin');
+        }
+      });
+    } else throw new Error('no firebase');
+  } catch {
+    const su = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
+    if (su && su.name) applyNavUser(su.name, su.role === 'admin');
+  }
+}
+
+// ── Mobile menu toggle ──────────────────────────────────────
+const menuToggle = document.getElementById('menuToggle');
+const navLinks   = document.querySelector('.nav-links');
+if (menuToggle && navLinks) {
+  menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('active');
+    navLinks.classList.toggle('active');
+  });
+}
 
 </script>
 </body>
