@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>D-QueenCart — Secure Checkout</title>
+  <meta name="description" content="Complete your D-QueenCart order securely. Fill in your shipping details and place your order via WhatsApp with cash on delivery." />
   <link rel="icon" type="image/png" href="favicon.png?v=2">
   <link rel="shortcut icon" href="favicon.png?v=2">
   <link rel="apple-touch-icon" href="favicon.png?v=2">
-  
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-QBQ06VWE34"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -15,104 +17,616 @@
     gtag('config', 'G-QBQ06VWE34');
   </script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <style>
-    :root{--cream:#faf8f5;--gold:#c8a97e;--gold-light:#e8d9c0;--dark:#1a3a32;--muted:#8a8a8a;--error:#c0392b;--success:#27ae60}
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Jost',sans-serif;background:var(--cream);color:var(--dark);cursor:none;min-height:100vh}
-    nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:1.5rem 4rem;background:rgba(249,245,239,.97);backdrop-filter:blur(12px);box-shadow:0 1px 20px rgba(0,0,0,.06)}
-    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;letter-spacing:.3em;color:var(--dark);text-decoration:none}
-
-    /* Steps */
-    .checkout-steps{display:flex;justify-content:center;gap:0;padding:7rem 4rem 2rem;max-width:900px;margin:0 auto}
-    .step{flex:1;text-align:center;position:relative}
-    .step::after{content:'';position:absolute;top:14px;left:calc(50% + 20px);right:calc(-50% + 20px);height:1px;background:var(--gold-light)}
-    .step:last-child::after{display:none}
-    .step-circle{width:28px;height:28px;border-radius:50%;border:1px solid var(--gold-light);background:var(--cream);margin:0 auto .5rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--muted);position:relative;z-index:1}
-    .step.active .step-circle{background:var(--dark);border-color:var(--dark);color:white}
-    .step.done .step-circle{background:var(--gold);border-color:var(--gold);color:white}
-    .step-label{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
-    .step.active .step-label{color:var(--dark)}
-
-    .page-wrapper{max-width:1100px;margin:0 auto;padding:1rem 4rem 5rem}
-    .checkout-layout{display:grid;grid-template-columns:1fr 360px;gap:3rem;align-items:start}
-
-    /* Form Side */
-    .form-section{background:white;padding:2.5rem;margin-bottom:1.5rem}
-    .form-section-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;color:var(--dark);margin-bottom:1.5rem;padding-bottom:.8rem;border-bottom:1px solid var(--gold-light);display:flex;align-items:center;gap:.8rem}
-    .form-section-title .step-num{width:24px;height:24px;background:var(--dark);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-    .form-grid.full{grid-template-columns:1fr}
-    .form-group{margin-bottom:.5rem}
-    .form-label{display:block;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
-    .form-input{width:100%;padding:.8rem 1rem;background:transparent;border:1px solid var(--gold-light);color:var(--dark);font-family:'Jost',sans-serif;font-size:.88rem;outline:none;transition:border-color .3s}
-    .form-input:focus{border-color:var(--gold)}
-    .form-input.error-field{border-color:var(--error)}
-    .form-select{width:100%;padding:.8rem 1rem;background:var(--cream);border:1px solid var(--gold-light);color:var(--dark);font-family:'Jost',sans-serif;font-size:.88rem;outline:none;cursor:pointer}
-    .form-textarea{width:100%;padding:.8rem 1rem;background:transparent;border:1px solid var(--gold-light);color:var(--dark);font-family:'Jost',sans-serif;font-size:.88rem;outline:none;resize:vertical;min-height:80px;transition:border-color .3s}
-    .form-textarea:focus{border-color:var(--gold)}
-    .field-error{font-size:.7rem;color:var(--error);margin-top:.2rem;display:none}
-    .field-error.show{display:block}
-
-    /* Payment Method */
-    .payment-options{display:flex;flex-direction:column;gap:.8rem}
-    .payment-opt{display:flex;align-items:center;gap:.8rem;padding:1rem;border:1px solid var(--gold-light);cursor:pointer;transition:border-color .3s}
-    .payment-opt:hover,.payment-opt.selected{border-color:var(--gold)}
-    .payment-opt input[type=radio]{accent-color:var(--gold);cursor:pointer}
-    .payment-opt-label{flex:1}
-    .payment-opt-name{font-size:.85rem;font-weight:500;margin-bottom:.1rem}
-    .payment-opt-sub{font-size:.72rem;color:var(--muted)}
-    .payment-opt-icon{font-size:1.3rem}
-    .whatsapp-note{background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.3);padding:1rem;font-size:.8rem;color:#1a7a3e;line-height:1.7;margin-top:.8rem}
-    .whatsapp-note strong{color:#1a7a3e}
-
-    /* Order Summary */
-    .order-summary{background:white;padding:2rem;position:sticky;top:6rem}
-    .summary-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid var(--gold-light)}
-    .order-item{display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem;padding-bottom:.8rem;border-bottom:1px solid var(--gold-light)}
-    .order-item:last-of-type{border-bottom:none}
-    .order-item img{width:50px;height:50px;object-fit:cover;flex-shrink:0}
-    .order-item-name{font-size:.82rem;flex:1;line-height:1.4}
-    .order-item-qty{font-size:.72rem;color:var(--muted)}
-    .order-item-price{font-size:.85rem;color:var(--gold)}
-    .summary-row{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.6rem}
-    .summary-row .l{color:var(--muted)}
-    .summary-row.total{border-top:1px solid var(--gold-light);padding-top:.8rem;margin-top:.4rem;font-size:1rem;font-weight:500}
-    .summary-row.total .v{color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.3rem}
-    .btn-place-order{display:flex;align-items:center;justify-content:center;gap:.8rem;width:100%;padding:1.2rem;background:#25d366;color:white;border:none;font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .35s;margin-top:1.5rem}
-    .btn-place-order:hover{background:#1ebe5d;transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,211,102,.3)}
-    .btn-place-order .wa-icon{font-size:1.2rem}
-    .secure-note{display:flex;align-items:center;gap:.5rem;font-size:.72rem;color:var(--muted);margin-top:.8rem;justify-content:center}
-
-    /* Success Overlay */
-    .success-overlay{position:fixed;inset:0;background:rgba(26,21,16,.85);z-index:9999;display:none;align-items:center;justify-content:center}
-    .success-overlay.show{display:flex}
-    .success-card{background:white;padding:3rem;max-width:480px;width:90%;text-align:center}
-    .success-icon{font-size:3.5rem;margin-bottom:1rem}
-    .success-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;margin-bottom:.8rem}
-    .success-msg{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:2rem}
-    .btn-home{display:inline-block;padding:.9rem 2.5rem;background:var(--dark);color:white;text-decoration:none;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;transition:background .3s}
-    .btn-home:hover{background:var(--gold)}
-
-    @media(max-width:900px){.checkout-layout{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
-    @media(max-width:600px){.page-wrapper,.checkout-steps{padding-left:1.5rem;padding-right:1.5rem}}
-  </style>
-
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="enhanced-theme.css" />
   <script src="luxury-ui.js"></script>
+
+  <style>
+    /* ============ DESIGN TOKENS ============ */
+    :root {
+      --cream:       #faf8f5;
+      --cream-dark:  #f2ede4;
+      --gold:        #c8a97e;
+      --gold-light:  #e8d9c0;
+      --gold-deep:   #a8845a;
+      --gold-grad:   linear-gradient(135deg, #c8a97e 0%, #a8845a 100%);
+      --dark:        #1a3a32;
+      --dark-mid:    #2d4f44;
+      --muted:       #8a8a8a;
+      --border:      rgba(200,169,126,0.25);
+      --border-dark: rgba(26,58,50,0.15);
+      --error:       #c0392b;
+      --success:     #27ae60;
+      --whatsapp:    #25d366;
+      --surface:     #ffffff;
+      --radius-sm:   8px;
+      --radius-md:   16px;
+      --radius-lg:   24px;
+      --shadow-xs:   0 2px 8px rgba(26,58,50,0.04);
+      --shadow-sm:   0 8px 24px rgba(26,58,50,0.06);
+      --shadow-md:   0 16px 40px rgba(26,58,50,0.10);
+      --shadow-lg:   0 30px 60px rgba(26,58,50,0.14);
+      --transition:  0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============ BREADCRUMB STEPS ============ */
+    .checkout-progress {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      margin-top: var(--nav-height, 72px);
+    }
+    .checkout-progress-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    }
+    .prog-step {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .prog-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-light);
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+    .prog-step.done .prog-dot {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #fff;
+    }
+    .prog-step.active .prog-dot {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(26,58,50,0.1);
+    }
+    .prog-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+      transition: color var(--transition);
+    }
+    .prog-step.active .prog-label { color: var(--dark); }
+    .prog-step.done .prog-label   { color: var(--gold-deep); }
+    .prog-line {
+      flex: 1;
+      height: 2px;
+      background: var(--gold-light);
+      margin: 0 1rem;
+      max-width: 80px;
+      border-radius: 2px;
+      transition: background var(--transition);
+    }
+    .prog-line.done { background: var(--gold); }
+
+    /* ============ PAGE LAYOUT ============ */
+    .page-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 6rem;
+    }
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 400;
+      color: var(--dark);
+      margin-bottom: 0.4rem;
+    }
+    .page-subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      letter-spacing: 0.02em;
+    }
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    /* ============ FORM CARDS ============ */
+    .form-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      transition: box-shadow var(--transition);
+    }
+    .form-card:hover { box-shadow: var(--shadow-md); }
+
+    .form-card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(200,169,126,0.05) 0%, transparent 100%);
+    }
+    .form-card-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--dark);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .form-card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--dark);
+    }
+    .form-card-body {
+      padding: 2rem;
+    }
+
+    /* ============ FORM FIELDS ============ */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group {
+      position: relative;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.45rem;
+      font-weight: 500;
+      transition: color var(--transition);
+    }
+    .form-group:focus-within .form-label { color: var(--dark); }
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: var(--cream);
+      border: 1.5px solid var(--gold-light);
+      color: var(--dark);
+      font-family: 'Jost', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition);
+      appearance: none;
+    }
+    .form-input::placeholder { color: #bbb; font-size: 0.85rem; }
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--dark);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(26,58,50,0.07);
+    }
+    .form-input.error-field,
+    .form-select.error-field {
+      border-color: var(--error);
+      background: rgba(192,57,43,0.02);
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.06);
+    }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8a8a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+    .form-textarea {
+      min-height: 90px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+    .field-error {
+      font-size: 0.71rem;
+      color: var(--error);
+      margin-top: 0.35rem;
+      display: none;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .field-error::before { content: '!'; font-weight: 700; }
+    .field-error.show { display: flex; }
+
+    /* ============ PAYMENT OPTIONS ============ */
+    .payment-options { display: flex; flex-direction: column; gap: 1rem; }
+    .payment-opt {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.2rem 1.5rem;
+      background: var(--cream);
+      border: 2px solid var(--gold-light);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .payment-opt::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(200,169,126,0.05) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .payment-opt:hover { border-color: var(--gold); background: #fff; box-shadow: var(--shadow-sm); }
+    .payment-opt:hover::before { opacity: 1; }
+    .payment-opt.selected {
+      border-color: var(--dark);
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+    .payment-opt.selected::before { opacity: 1; }
+    .payment-radio {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--gold-light);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all var(--transition);
+    }
+    .payment-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--dark);
+      transform: scale(0);
+      transition: transform var(--transition);
+    }
+    .payment-opt.selected .payment-radio {
+      border-color: var(--dark);
+    }
+    .payment-opt.selected .payment-radio::after { transform: scale(1); }
+    .payment-opt input[type=radio] { display: none; }
+    .payment-opt-label { flex: 1; }
+    .payment-opt-name {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.2rem;
+    }
+    .payment-opt-sub { font-size: 0.77rem; color: var(--muted); line-height: 1.5; }
+    .payment-opt-badge {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+    .whatsapp-note {
+      margin-top: 1.2rem;
+      background: rgba(37,211,102,0.06);
+      border: 1px solid rgba(37,211,102,0.25);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.2rem;
+      font-size: 0.8rem;
+      color: #1a7a3e;
+      line-height: 1.7;
+    }
+    .whatsapp-note strong { color: #1a7a3e; }
+
+    /* ============ ORDER SUMMARY SIDEBAR ============ */
+    .order-summary {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      position: sticky;
+      top: 5.5rem;
+      overflow: hidden;
+      transition: box-shadow var(--transition);
+    }
+    .order-summary:hover { box-shadow: var(--shadow-md); }
+
+    .summary-header {
+      padding: 1.5rem 1.8rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(200,169,126,0.08) 0%, transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .summary-header-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--dark);
+    }
+    .summary-header-count {
+      font-size: 0.72rem;
+      background: var(--dark);
+      color: #fff;
+      border-radius: 20px;
+      padding: 0.2rem 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    .summary-items {
+      padding: 1.2rem 1.8rem;
+      max-height: 260px;
+      overflow-y: auto;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-items::-webkit-scrollbar { width: 4px; }
+    .summary-items::-webkit-scrollbar-track { background: var(--cream); }
+    .summary-items::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 2px; }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .order-item:last-child { border-bottom: none; }
+    .order-item-img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      background: var(--cream);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      padding: 3px;
+      flex-shrink: 0;
+    }
+    .order-item-info { flex: 1; min-width: 0; }
+    .order-item-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--dark);
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .order-item-qty {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+    .order-item-price {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gold-deep);
+      white-space: nowrap;
+    }
+
+    .summary-totals { padding: 1.2rem 1.8rem; }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      padding: 0.45rem 0;
+    }
+    .summary-row .label { color: var(--muted); }
+    .summary-row .value { font-weight: 500; color: var(--dark); }
+    .summary-row.discount .value { color: var(--success); font-weight: 600; }
+    .summary-row.total-row {
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .summary-row.total-row .label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--dark);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .summary-row.total-row .value {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: var(--gold-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ============ CTA BUTTON ============ */
+    .cta-area { padding: 0 1.8rem 1.8rem; }
+    .btn-place-order {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      width: 100%;
+      padding: 1.1rem 1rem;
+      background: linear-gradient(135deg, #25d366 0%, #1da851 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'Jost', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all var(--transition);
+      box-shadow: 0 8px 20px rgba(37,211,102,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-place-order::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    }
+    .btn-place-order:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(37,211,102,0.32);
+    }
+    .btn-place-order:active { transform: translateY(0); }
+    .wa-icon { font-size: 1.15rem; z-index: 1; position: relative; }
+    .btn-text { z-index: 1; position: relative; }
+
+    .secure-badges {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* ============ SUCCESS OVERLAY ============ */
+    .success-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,20,15,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .success-overlay.show { display: flex; }
+    .success-card {
+      background: #fff;
+      padding: 3rem 2.5rem;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(200,169,126,0.15) 0%, rgba(200,169,126,0.05) 100%);
+      border: 2px solid var(--gold-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 1.5rem;
+    }
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 500;
+      margin-bottom: 0.8rem;
+      background: var(--gold-grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .success-msg {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2.5rem;
+      background: var(--dark);
+      color: white;
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border-radius: var(--radius-sm);
+      font-family: 'Jost', sans-serif;
+      font-weight: 600;
+      transition: all var(--transition);
+    }
+    .btn-home:hover { background: var(--gold-deep); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+    /* ============ RESPONSIVE ============ */
+    @media(max-width:900px) {
+      .checkout-layout { grid-template-columns: 1fr; }
+      .order-summary { position: static; }
+    }
+    @media(max-width:640px) {
+      .page-wrapper { padding: 1.5rem 1rem 4rem; }
+      .checkout-progress { padding: 0.8rem 1rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-card-body { padding: 1.5rem; }
+      .form-card-header { padding: 1.2rem 1.5rem; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- Success Overlay -->
+<!-- ======= SUCCESS OVERLAY ======= -->
 <div class="success-overlay" id="successOverlay">
   <div class="success-card">
     <div class="success-icon">✅</div>
     <div class="success-title">Order Placed!</div>
-    <div class="success-msg">Your order has been sent via WhatsApp. Our team will confirm your order and payment details shortly.<br><br><strong>Thank you for choosing D-QueenCart ✦</strong></div>
-    <a href="index.html" class="btn-home" onclick="clearCart()">Back to Home</a>
+    <div class="success-msg">
+      Your order has been sent via WhatsApp. Our team will confirm availability and payment details within 30 minutes.<br/><br/>
+      <strong>Thank you for choosing D-QueenCart ✦</strong>
+    </div>
+    <a href="index.html" class="btn-home" onclick="clearCart()">← Back to Home</a>
   </div>
 </div>
 
+<!-- ======= NAVIGATION ======= -->
 <nav>
   <div class="menu-toggle" id="menuToggle">
     <span></span><span></span><span></span>
@@ -125,113 +639,194 @@
   </ul>
 </nav>
 
-
-<!-- Steps -->
-<div class="checkout-steps">
-  <div class="step done"><div class="step-circle">✓</div><div class="step-label">Cart</div></div>
-  <div class="step active"><div class="step-circle">2</div><div class="step-label">Details</div></div>
-  <div class="step"><div class="step-circle">3</div><div class="step-label">Confirm</div></div>
+<!-- ======= PROGRESS INDICATOR ======= -->
+<div class="checkout-progress">
+  <div class="checkout-progress-inner">
+    <div class="prog-step done">
+      <div class="prog-dot">✓</div>
+      <div class="prog-label">Cart</div>
+    </div>
+    <div class="prog-line done"></div>
+    <div class="prog-step active">
+      <div class="prog-dot">2</div>
+      <div class="prog-label">Details</div>
+    </div>
+    <div class="prog-line"></div>
+    <div class="prog-step">
+      <div class="prog-dot">3</div>
+      <div class="prog-label">Confirm</div>
+    </div>
+  </div>
 </div>
 
+<!-- ======= MAIN LAYOUT ======= -->
 <div class="page-wrapper">
+  <div class="page-title">Checkout</div>
+  <div class="page-subtitle">Review your order and complete your details below</div>
+
   <div class="checkout-layout">
-    <!-- Left: Forms -->
-    <div>
-      <!-- Shipping Info -->
-      <div class="form-section">
-        <div class="form-section-title"><div class="step-num">1</div> Shipping Information</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Full Name *</label>
-            <input type="text" class="form-input" id="fullName" placeholder="Priya Sharma" />
-            <div class="field-error" id="nameErr">Name is required</div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Phone Number *</label>
-            <input type="tel" class="form-input" id="phone" placeholder="+91 99526 63563" />
-            <div class="field-error" id="phoneErr">Valid phone required</div>
-          </div>
+    <!-- ===== LEFT: FORMS ===== -->
+    <div class="forms-col">
+
+      <!-- Shipping Info Card -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <div class="form-card-num">1</div>
+          <div class="form-card-title">Shipping Information</div>
         </div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input" id="email" placeholder="priya@email.com" />
+        <div class="form-card-body">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="fullName">Full Name *</label>
+              <input type="text" class="form-input" id="fullName" placeholder="e.g. Priya Sharma" autocomplete="name"/>
+              <div class="field-error" id="nameErr">Name is required</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone Number *</label>
+              <input type="tel" class="form-input" id="phone" placeholder="+91 99526 63563" autocomplete="tel"/>
+              <div class="field-error" id="phoneErr">Valid phone required</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Pincode *</label>
-            <input type="text" class="form-input" id="pincode" placeholder="600001" maxlength="6" />
-            <div class="field-error" id="pincodeErr">Valid 6-digit pincode required</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address</label>
+              <input type="email" class="form-input" id="email" placeholder="priya@email.com" autocomplete="email"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="pincode">Pincode *</label>
+              <input type="text" class="form-input" id="pincode" placeholder="600001" maxlength="6" autocomplete="postal-code"/>
+              <div class="field-error" id="pincodeErr">Valid 6-digit pincode required</div>
+            </div>
           </div>
-        </div>
-        <div class="form-group form-grid full" style="margin-top:.5rem">
-          <label class="form-label">Street Address *</label>
-          <input type="text" class="form-input" id="address" placeholder="House/Flat no., Street, Area" />
-          <div class="field-error" id="addrErr">Address is required</div>
-        </div>
-        <div class="form-grid" style="margin-top:.5rem">
-          <div class="form-group">
-            <label class="form-label">City *</label>
-            <input type="text" class="form-input" id="city" placeholder="Chennai" />
-            <div class="field-error" id="cityErr">City is required</div>
+
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label" for="address">Street Address *</label>
+              <input type="text" class="form-input" id="address" placeholder="House/Flat no., Street, Area" autocomplete="street-address"/>
+              <div class="field-error" id="addrErr">Address is required</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">State *</label>
-            <select class="form-select" id="state">
-              <option value="">Select State</option>
-              <option>Tamil Nadu</option><option>Maharashtra</option><option>Karnataka</option>
-              <option>Delhi</option><option>Kerala</option><option>Andhra Pradesh</option>
-              <option>Telangana</option><option>Gujarat</option><option>Rajasthan</option>
-              <option>West Bengal</option><option>Other</option>
-            </select>
-            <div class="field-error" id="stateErr">State is required</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="city">City *</label>
+              <input type="text" class="form-input" id="city" placeholder="Chennai" autocomplete="address-level2"/>
+              <div class="field-error" id="cityErr">City is required</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="state">State *</label>
+              <select class="form-select" id="state" autocomplete="address-level1">
+                <option value="">Select State</option>
+                <option>Tamil Nadu</option>
+                <option>Maharashtra</option>
+                <option>Karnataka</option>
+                <option>Delhi</option>
+                <option>Kerala</option>
+                <option>Andhra Pradesh</option>
+                <option>Telangana</option>
+                <option>Gujarat</option>
+                <option>Rajasthan</option>
+                <option>West Bengal</option>
+                <option>Other</option>
+              </select>
+              <div class="field-error" id="stateErr">State is required</div>
+            </div>
           </div>
-        </div>
-        <div class="form-group form-grid full" style="margin-top:.5rem">
-          <label class="form-label">Delivery Notes (Optional)</label>
-          <textarea class="form-textarea" id="notes" placeholder="Any special instructions for delivery..."></textarea>
+
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label" for="notes">Delivery Notes <span style="color:var(--muted);font-weight:300">(Optional)</span></label>
+              <textarea class="form-textarea" id="notes" placeholder="Any special instructions for delivery…"></textarea>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      <!-- Payment Method -->
-      <div class="form-section">
-        <div class="form-section-title"><div class="step-num">2</div> Payment Method</div>
-        <div class="payment-options">
-          <label class="payment-opt selected" id="optWhatsapp">
-            <input type="radio" name="payment" value="whatsapp" checked onchange="selectPayment('optWhatsapp')"/>
-            <div class="payment-opt-label">
-              <div class="payment-opt-name">WhatsApp Order + Pay on Delivery</div>
-              <div class="payment-opt-sub">Place order via WhatsApp, pay cash on delivery</div>
-            </div>
-            <div class="payment-opt-icon">💬</div>
-          </label>
-          <label class="payment-opt" id="optUPI">
-            <input type="radio" name="payment" value="upi" onchange="selectPayment('optUPI')"/>
-            <div class="payment-opt-label">
-              <div class="payment-opt-name">UPI / Online Payment</div>
-              <div class="payment-opt-sub">Share payment link via WhatsApp after order</div>
-            </div>
-            <div class="payment-opt-icon">📱</div>
-          </label>
+      <!-- Payment Method Card -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <div class="form-card-num">2</div>
+          <div class="form-card-title">Payment Method</div>
         </div>
-        <div class="whatsapp-note">
-          <strong>📱 How it works:</strong> After clicking "Place Order via WhatsApp", you'll be redirected to WhatsApp with your complete order details. Our team will confirm availability and payment within 30 minutes.
+        <div class="form-card-body">
+          <div class="payment-options">
+
+            <label class="payment-opt selected" id="optWhatsapp" for="payWhatsapp">
+              <input type="radio" name="payment" id="payWhatsapp" value="whatsapp" checked onchange="selectPayment('optWhatsapp')"/>
+              <div class="payment-radio"></div>
+              <div class="payment-opt-label">
+                <div class="payment-opt-name">Pay on Delivery</div>
+                <div class="payment-opt-sub">Place order via WhatsApp — pay cash when it arrives</div>
+              </div>
+              <div class="payment-opt-badge">💰</div>
+            </label>
+
+            <label class="payment-opt" id="optUPI" for="payUPI">
+              <input type="radio" name="payment" id="payUPI" value="upi" onchange="selectPayment('optUPI')"/>
+              <div class="payment-radio"></div>
+              <div class="payment-opt-label">
+                <div class="payment-opt-name">UPI / Online Payment</div>
+                <div class="payment-opt-sub">We'll share a secure payment link via WhatsApp after confirming</div>
+              </div>
+              <div class="payment-opt-badge">📱</div>
+            </label>
+
+          </div>
+
+          <div class="whatsapp-note">
+            <strong>💬 How it works:</strong> After clicking "Place Order via WhatsApp", you'll be redirected to WhatsApp with your complete order details. Our team confirms availability and payment within 30 minutes.
+          </div>
         </div>
       </div>
+
     </div>
 
-    <!-- Right: Order Summary -->
+    <!-- ===== RIGHT: ORDER SUMMARY ===== -->
     <div class="order-summary">
-      <div class="summary-title">Your Order</div>
-      <div id="orderItemsList"></div>
-      <div class="summary-row"><span class="l">Subtotal</span><span id="summarySubtotal">₹0</span></div>
-      <div class="summary-row"><span class="l">Shipping</span><span id="summaryShipping">FREE</span></div>
-      <div class="summary-row" id="discountRow" style="display:none"><span class="l">Discount (<span id="discountLabel">0%</span>)</span><span id="summaryDiscount">—</span></div>
-      <div class="summary-row total"><span class="l">Total</span><span class="v" id="summaryTotal">₹0</span></div>
-      <button class="btn-place-order" onclick="placeOrder()">
-        <span class="wa-icon">📱</span> Place Order via WhatsApp
-      </button>
-      <div class="secure-note">🔒 Secure & Trusted · No advance payment required</div>
+      <div class="summary-header">
+        <div class="summary-header-title">Your Order</div>
+        <div class="summary-header-count" id="itemCount">0 items</div>
+      </div>
+
+      <div class="summary-items" id="orderItemsList"></div>
+
+      <div class="summary-totals">
+        <div class="summary-row">
+          <span class="label">Subtotal</span>
+          <span class="value" id="summarySubtotal">₹0</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Shipping</span>
+          <span class="value" id="summaryShipping">FREE</span>
+        </div>
+        <div class="summary-row discount" id="discountRow" style="display:none">
+          <span class="label">Discount (<span id="discountLabel">0%</span>)</span>
+          <span class="value" id="summaryDiscount">—</span>
+        </div>
+        <div class="summary-row total-row">
+          <span class="label">Total</span>
+          <span class="value" id="summaryTotal">₹0</span>
+        </div>
+      </div>
+
+      <div class="cta-area">
+        <button class="btn-place-order" id="placeOrderBtn" onclick="placeOrder()">
+          <span class="wa-icon">💬</span>
+          <span class="btn-text">Place Order via WhatsApp</span>
+        </button>
+        <div class="secure-badges">
+          <span class="secure-badge">🔒 Secure</span>
+          <span>·</span>
+          <span class="secure-badge">✅ No advance payment</span>
+          <span>·</span>
+          <span class="secure-badge">📦 Free delivery over ₹500</span>
+        </div>
+      </div>
     </div>
+
   </div>
 </div>
 
@@ -242,161 +837,201 @@
 <script src="cart.js"></script>
 <script>
 
-const OWNER_WHATSAPP = '919952663563';
-
-// Read from per-user cart key via DQueenCartUtil
 const cart = DQueenCartUtil.get();
 
 function renderOrderSummary() {
   const config = window.DQC_CONFIG || { shipping: { baseCharge: 100, freeThreshold: 500 } };
   const list = document.getElementById('orderItemsList');
   if (cart.length === 0) { window.location.href='cart.html'; return; }
-  list.innerHTML = cart.map(item=>`
-    <div class="order-item">
-      <img src="${item.image}" alt="${item.name}"/>
-      <div class="order-item-name">${item.name} <div class="order-item-qty">Qty: ${item.qty}</div></div>
-      <div class="order-item-price">₹${(item.price*item.qty).toLocaleString()}</div>
-    </div>`).join('');
-  const subtotal = cart.reduce((a,i)=>a+i.price*i.qty,0);
-  const discountPct = Number(sessionStorage.getItem('dqueencart_discount_pct') || '0');
-  const discountAmount = Math.round(subtotal * discountPct / 100);
-  const shipping = subtotal > config.shipping.freeThreshold ? 0 : config.shipping.baseCharge;
-  const total = subtotal - discountAmount + shipping;
 
-  document.getElementById('summarySubtotal').textContent='₹'+subtotal.toLocaleString();
-  document.getElementById('summaryShipping').textContent=shipping===0?'FREE':'₹'+shipping;
-  
+  document.getElementById('itemCount').textContent = cart.length + (cart.length === 1 ? ' item' : ' items');
+
+  list.innerHTML = cart.map(item => `
+    <div class="order-item">
+      <img class="order-item-img" src="${item.image}" alt="${item.name}" loading="lazy"/>
+      <div class="order-item-info">
+        <div class="order-item-name">${item.name}</div>
+        <div class="order-item-qty">Qty: ${item.qty}</div>
+      </div>
+      <div class="order-item-price">₹${(item.price * item.qty).toLocaleString()}</div>
+    </div>`).join('');
+
+  const subtotal      = cart.reduce((a, i) => a + i.price * i.qty, 0);
+  const discountPct   = Number(sessionStorage.getItem('dqueencart_discount_pct') || '0');
+  const discountAmt   = Math.round(subtotal * discountPct / 100);
+  const shipping      = subtotal > config.shipping.freeThreshold ? 0 : config.shipping.baseCharge;
+  const total         = subtotal - discountAmt + shipping;
+
+  document.getElementById('summarySubtotal').textContent = '₹' + subtotal.toLocaleString();
+  document.getElementById('summaryShipping').textContent = shipping === 0 ? 'FREE' : '₹' + shipping;
+
   const dRow = document.getElementById('discountRow');
-  const dVal = document.getElementById('summaryDiscount');
-  const dLab = document.getElementById('discountLabel');
-  if (discountAmount > 0) {
-    dLab.textContent = `${discountPct}%`;
-    dVal.textContent = `-₹${discountAmount.toLocaleString()}`;
+  if (discountAmt > 0) {
+    document.getElementById('discountLabel').textContent = discountPct + '%';
+    document.getElementById('summaryDiscount').textContent = '-₹' + discountAmt.toLocaleString();
     dRow.style.display = 'flex';
   } else {
     dRow.style.display = 'none';
   }
 
-  document.getElementById('summaryTotal').textContent='₹'+total.toLocaleString();
+  document.getElementById('summaryTotal').textContent = '₹' + total.toLocaleString();
 }
 
 function selectPayment(optId) {
-  document.querySelectorAll('.payment-opt').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('.payment-opt').forEach(el => el.classList.remove('selected'));
   document.getElementById(optId).classList.add('selected');
 }
 
 function validate() {
-  let ok=true;
-  const fields=[
-    ['fullName','nameErr','Name is required'],
-    ['phone','phoneErr','Valid phone required'],
-    ['address','addrErr','Address is required'],
-    ['city','cityErr','City is required'],
-    ['pincode','pincodeErr','Valid 6-digit pincode required'],
+  let ok = true;
+  const fields = [
+    ['fullName', 'nameErr',    'Name is required'],
+    ['phone',    'phoneErr',   'Valid phone number required'],
+    ['address',  'addrErr',    'Street address is required'],
+    ['city',     'cityErr',    'City is required'],
+    ['pincode',  'pincodeErr', 'Valid 6-digit pincode required'],
   ];
-  fields.forEach(([id,errId,msg])=>{
-    const el=document.getElementById(id), err=document.getElementById(errId);
-    if (!el.value.trim()) { el.classList.add('error-field'); err.textContent=msg; err.classList.add('show'); ok=false; }
-    else { el.classList.remove('error-field'); err.classList.remove('show'); }
+  fields.forEach(([id, errId, msg]) => {
+    const el  = document.getElementById(id);
+    const err = document.getElementById(errId);
+    if (!el.value.trim()) {
+      el.classList.add('error-field');
+      err.textContent = msg;
+      err.classList.add('show');
+      ok = false;
+    } else {
+      el.classList.remove('error-field');
+      err.classList.remove('show');
+    }
   });
-  const state=document.getElementById('state').value;
-  if (!state) { document.getElementById('stateErr').classList.add('show'); ok=false; } else document.getElementById('stateErr').classList.remove('show');
-  const pin=document.getElementById('pincode').value;
-  if (pin && !/^\d{6}$/.test(pin)) { document.getElementById('pincodeErr').textContent='Must be 6 digits'; document.getElementById('pincodeErr').classList.add('show'); document.getElementById('pincode').classList.add('error-field'); ok=false; }
+  const stateVal = document.getElementById('state').value;
+  const stateErr = document.getElementById('stateErr');
+  if (!stateVal) {
+    stateErr.textContent = 'Please select a state';
+    stateErr.classList.add('show');
+    ok = false;
+  } else {
+    stateErr.classList.remove('show');
+  }
+  const pin    = document.getElementById('pincode').value;
+  const pinErr = document.getElementById('pincodeErr');
+  if (pin && !/^\d{6}$/.test(pin)) {
+    pinErr.textContent = 'Pincode must be exactly 6 digits';
+    pinErr.classList.add('show');
+    document.getElementById('pincode').classList.add('error-field');
+    ok = false;
+  }
   return ok;
 }
 
 function placeOrder() {
   const config = window.DQC_CONFIG || { whatsappNumber: "919952663563", shipping: { baseCharge: 100, freeThreshold: 500 } };
   if (!validate()) return;
-  const name=document.getElementById('fullName').value;
-  const phone=document.getElementById('phone').value;
-  const email=document.getElementById('email').value;
-  const address=`${document.getElementById('address').value}, ${document.getElementById('city').value}, ${document.getElementById('state').value} - ${document.getElementById('pincode').value}`;
-  const notes=document.getElementById('notes').value;
 
-  const subtotal=cart.reduce((a,i)=>a+i.price*i.qty,0);
-  const discountPct = Number(sessionStorage.getItem('dqueencart_discount_pct') || '0');
-  const couponCode = sessionStorage.getItem('dqueencart_applied_coupon') || '';
-  const discountAmount = Math.round(subtotal * discountPct / 100);
-  const shipping=subtotal > config.shipping.freeThreshold?0:config.shipping.baseCharge;
-  const total=subtotal-discountAmount+shipping;
+  const btn = document.getElementById('placeOrderBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="font-size:1rem">⏳</span> <span class="btn-text">Placing Order…</span>';
 
-  const itemLines=cart.map(i=>`  • ${i.name} (x${i.qty}) — ₹${(i.price*i.qty).toLocaleString()}`).join('\n');
+  const name    = document.getElementById('fullName').value.trim();
+  const phone   = document.getElementById('phone').value.trim();
+  const email   = document.getElementById('email').value.trim();
+  const address = `${document.getElementById('address').value.trim()}, ${document.getElementById('city').value.trim()}, ${document.getElementById('state').value} - ${document.getElementById('pincode').value.trim()}`;
+  const notes   = document.getElementById('notes').value.trim();
 
-  const discountText = discountAmount > 0 
-    ? `\nDiscount: -₹${discountAmount.toLocaleString()} (${discountPct}% off via ${couponCode})` 
-    : '';
+  const subtotal      = cart.reduce((a, i) => a + i.price * i.qty, 0);
+  const discountPct   = Number(sessionStorage.getItem('dqueencart_discount_pct') || '0');
+  const couponCode    = sessionStorage.getItem('dqueencart_applied_coupon') || '';
+  const discountAmt   = Math.round(subtotal * discountPct / 100);
+  const shipping      = subtotal > config.shipping.freeThreshold ? 0 : config.shipping.baseCharge;
+  const total         = subtotal - discountAmt + shipping;
+  const payMethod     = document.querySelector('input[name=payment]:checked').value;
 
-  const message=`🛍️ *New Order — ${config.storeName || 'D-QueenCart'}*
+  const itemLines    = cart.map(i => `  • ${i.name} (×${i.qty}) — ₹${(i.price * i.qty).toLocaleString()}`).join('\n');
+  const discountText = discountAmt > 0 ? `\nDiscount: -₹${discountAmt.toLocaleString()} (${discountPct}% via ${couponCode})` : '';
+
+  const message = `🛍️ *New Order — ${config.storeName || 'D-QueenCart'}*
 
 👤 *Customer Details*
 Name: ${name}
-Phone: ${phone}${email?`\nEmail: ${email}`:''}
+Phone: ${phone}${email ? `\nEmail: ${email}` : ''}
 
 📦 *Shipping Address*
-${address}${notes?`\nNotes: ${notes}`:''}
+${address}${notes ? `\nNotes: ${notes}` : ''}
 
 🛒 *Order Items*
 ${itemLines}
 
 💰 *Order Summary*
 Subtotal: ₹${subtotal.toLocaleString()}${discountText}
-Shipping: ${shipping===0?'FREE':'₹'+shipping}
+Shipping: ${shipping === 0 ? 'FREE' : '₹' + shipping}
 *Total: ₹${total.toLocaleString()}*
 
-💳 Payment: ${document.querySelector('input[name=payment]:checked').value==='upi'?'Online/UPI':'Cash on Delivery'}
+💳 Payment: ${payMethod === 'upi' ? 'Online/UPI' : 'Cash on Delivery'}
 
 ✨ Placed via ${config.storeName || 'D-QueenCart'} Website`;
 
-  // Save order to Firebase if available
+  // Save to Firebase
   try {
     if (typeof db !== 'undefined') {
-      const payMethod = document.querySelector('input[name=payment]:checked').value === 'upi' ? 'UPI' : 'COD';
+      const payLabel = payMethod === 'upi' ? 'UPI' : 'COD';
       db.collection('orders').add({
-        customer:{name,phone,email,address,notes},
-        items:cart, 
+        customer: { name, phone, email, address, notes },
+        items: cart,
         subtotal,
-        discount: discountAmount,
-        couponCode: couponCode,
-        shipping, 
+        discount: discountAmt,
+        couponCode,
+        shipping,
         total,
-        status:'pending',
-        paymentMethod: payMethod,
+        status: 'pending',
+        paymentMethod: payLabel,
         paymentStatus: 'unpaid',
-        createdAt:new Date().toISOString()
+        createdAt: new Date().toISOString()
       });
-
-      // Update stock for each item
       cart.forEach(item => {
-        if (item.id && String(item.id).length > 5) { // Likely a Firestore ID
+        if (item.id && String(item.id).length > 5) {
           db.collection('products').doc(String(item.id)).update({
             stock: firebase.firestore.FieldValue.increment(-item.qty)
           }).catch(e => console.warn('Stock update failed for', item.id, e));
         }
       });
     }
-  } catch(e){}
+  } catch(e) {}
 
-  const waURL=`https://wa.me/${config.whatsappNumber || '919952663563'}?text=${encodeURIComponent(message)}`;
-  window.open(waURL,'_blank');
+  const waURL = `https://wa.me/${config.whatsappNumber || '919952663563'}?text=${encodeURIComponent(message)}`;
+  window.open(waURL, '_blank');
   document.getElementById('successOverlay').classList.add('show');
 }
 
-function clearCart() { 
-  DQueenCartUtil.clear(); 
+function clearCart() {
+  DQueenCartUtil.clear();
   sessionStorage.removeItem('dqueencart_applied_coupon');
   sessionStorage.removeItem('dqueencart_discount_pct');
 }
 
+// Init
 renderOrderSummary();
 
-const user=JSON.parse(localStorage.getItem('dqueencart_user')||'null');
-if (user) {
-  document.getElementById('fullName').value=user.name||'';
-  document.getElementById('phone').value=user.phone||'';
-  document.getElementById('email').value=user.email||'';
+// Pre-fill from saved user profile
+const savedUser = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
+if (savedUser) {
+  if (savedUser.name)  document.getElementById('fullName').value = savedUser.name;
+  if (savedUser.phone) document.getElementById('phone').value    = savedUser.phone;
+  if (savedUser.email) document.getElementById('email').value   = savedUser.email;
 }
+
+// Live field validation
+['fullName','phone','address','city','pincode','state'].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    if (el.value.trim()) {
+      el.classList.remove('error-field');
+      const errEl = document.getElementById(id === 'fullName' ? 'nameErr' : id === 'phone' ? 'phoneErr' : id === 'address' ? 'addrErr' : id === 'city' ? 'cityErr' : id === 'pincode' ? 'pincodeErr' : 'stateErr');
+      if (errEl) errEl.classList.remove('show');
+    }
+  });
+});
+
 </script>
 </body>
 </html>
