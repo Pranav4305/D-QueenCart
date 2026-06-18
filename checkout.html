@@ -976,6 +976,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="cart.js"></script>
+<script src="shared.js"></script>
 <script>
 
 const cart = DQueenCartUtil.get();
@@ -1173,49 +1174,6 @@ if (savedUser) {
   });
 });
 
-// ── Auth nav state ──────────────────────────────────────────
-function applyNavUser(name, isAdmin) {
-  const signInBtn = document.getElementById('navSignIn');
-  const navUser   = document.getElementById('navUser');
-  const adminBtn  = document.getElementById('navAdminBtn');
-  if (signInBtn) signInBtn.style.display = 'none';
-  if (navUser)   { navUser.style.display = 'flex'; }
-  const nameEl = document.getElementById('navUserName');
-  if (nameEl) nameEl.textContent = 'Hi, ' + name.split(' ')[0];
-  if (adminBtn) adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
-}
-
-const _isAdminSession = sessionStorage.getItem('D-QueenCart_admin') === '1';
-if (_isAdminSession) {
-  applyNavUser('Admin', true);
-} else {
-  try {
-    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
-      firebase.auth().onAuthStateChanged(u => {
-        if (u) {
-          const isAdminFb = u.email === 'admin@D-QueenCart.in' || sessionStorage.getItem('D-QueenCart_admin') === '1';
-          applyNavUser(u.displayName || u.email.split('@')[0] || 'User', isAdminFb);
-        } else {
-          const su = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
-          if (su && su.name) applyNavUser(su.name, su.role === 'admin');
-        }
-      });
-    } else throw new Error('no firebase');
-  } catch {
-    const su = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
-    if (su && su.name) applyNavUser(su.name, su.role === 'admin');
-  }
-}
-
-// ── Mobile menu toggle ──────────────────────────────────────
-const menuToggle = document.getElementById('menuToggle');
-const navLinks   = document.querySelector('.nav-links');
-if (menuToggle && navLinks) {
-  menuToggle.addEventListener('click', () => {
-    menuToggle.classList.toggle('active');
-    navLinks.classList.toggle('active');
-  });
-}
 
 </script>
 </body>

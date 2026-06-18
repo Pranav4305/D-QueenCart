@@ -81,76 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 5. Shared Custom Cursor Implementation
-    initCustomCursor();
 
-    function initCustomCursor() {
-        const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        if (isMobile) return; 
-
-        // 5a. Inject Cursor Elements if they don't exist
-        if (!document.getElementById('cursor')) {
-            const cursor = document.createElement('div');
-            cursor.className = 'cursor';
-            cursor.id = 'cursor';
-            document.body.appendChild(cursor);
-        }
-        if (!document.getElementById('cursorFollower')) {
-            const follower = document.createElement('div');
-            follower.className = 'cursor-follower';
-            follower.id = 'cursorFollower';
-            document.body.appendChild(follower);
-        }
-
-        const cursor = document.getElementById('cursor');
-        const follower = document.getElementById('cursorFollower');
-        
-        if (!cursor || !follower) return;
-
-        document.body.classList.add('has-custom-cursor');
-
-        // 5b. Track Movement
-        document.addEventListener('mousemove', e => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            
-            // Smoother following effect
-            requestAnimationFrame(() => {
-                follower.style.left = e.clientX + 'px';
-                follower.style.top = e.clientY + 'px';
-            });
-        });
-
-        // 5c. Hover Effects (Scale up on interactive elements)
-        const interactiveSelectors = 'a, button, .cat-card, .product-card, input, select, textarea, [role="button"]';
-        
-        const applyHover = () => {
-            document.querySelectorAll(interactiveSelectors).forEach(el => {
-                // Remove existing listeners to avoid duplicates
-                el.removeEventListener('mouseenter', hoverIn);
-                el.removeEventListener('mouseleave', hoverOut);
-                
-                el.addEventListener('mouseenter', hoverIn);
-                el.addEventListener('mouseleave', hoverOut);
-            });
-        };
-
-        function hoverIn() {
-            follower.style.transform = 'translate(-50%, -50%) scale(1.8)';
-            follower.style.background = 'rgba(26, 58, 50, 0.05)';
-            follower.style.borderColor = 'var(--dark)';
-        }
-
-        function hoverOut() {
-            follower.style.transform = 'translate(-50%, -50%) scale(1)';
-            follower.style.background = 'transparent';
-        }
-
-        applyHover();
-
-        const observer = new MutationObserver(applyHover);
-        observer.observe(document.body, { childList: true, subtree: true });
-    }
 
     // 6. Mobile Menu Toggle Logic
     initMobileMenu();

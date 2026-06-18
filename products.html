@@ -233,61 +233,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="cart.js"></script>
+<script src="shared.js"></script>
 <script>
 AOS.init({ duration:700, once:true });
-
-// ── Nav Auth ──────────────────────────────────────────────────
-function initNavAuth() {
-  const navSignIn   = document.getElementById('navSignIn');
-  const navUser     = document.getElementById('navUser');
-  const navUserName = document.getElementById('navUserName');
-  const isAdmin     = sessionStorage.getItem('D-QueenCart_admin') === '1';
-
-  function applyUser(name, showAdmin) {
-  navSignIn.style.display = 'none';
-  navUser.style.display   = 'flex';
-  navUserName.textContent = 'Hi, ' + name.split(' ')[0];
-  const adminBtn = document.getElementById('navAdminBtn');
-  if (adminBtn) adminBtn.style.display = showAdmin ? 'inline-block' : 'none';
-}
-
-if (isAdmin) { applyUser('Admin', true); return; }
-
-  try {
-    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
-      firebase.auth().onAuthStateChanged(u => {
-        if (u) {
-  const name = u.displayName || u.email.split('@')[0] || 'User';
-
-  // 🔥 THIS LINE IS CRITICAL
-  const isAdminFirebase =
-    u.email === 'admin@D-QueenCart.in' ||
-    sessionStorage.getItem('D-QueenCart_admin') === '1';
-
-  applyUser(name, isAdminFirebase);
-} else {
-          const su = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
-          if (su && su.name) applyUser(su.name, su.role === 'admin');
-        }
-      });
-    } else throw new Error('no firebase');
-  } catch {
-    const su = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
-    if (su && su.name) applyUser(su.name, su.role === 'admin');
-  }
-}
-
-function goToAccount(e) {
-    if (e) e.preventDefault();
-    const isAdmin = sessionStorage.getItem('D-QueenCart_admin') === '1';
-    const storedUser = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
-    const isAdminUser = storedUser && storedUser.role === 'admin';
-    if (isAdmin || isAdminUser) {
-      window.location.href = 'admin.html';
-    } else {
-      window.location.href = 'auth.html';
-    }
-}
 
 // ── Products Data ────────────────────────────────────────────
 const allProducts = [];
@@ -439,10 +387,6 @@ function addToCart(id) {
   showToast(res.msg);
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
-}
 
 // URL param filter (from category clicks)
 const urlParam = new URLSearchParams(window.location.search).get('cat');
@@ -477,7 +421,6 @@ function loadProducts() {
 }
 
 loadProducts();
-initNavAuth();
 </script>
 </body>
 </html>

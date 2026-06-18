@@ -199,11 +199,11 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="cart.js"></script>
+<script src="shared.js"></script>
 <script>
 
 let userExists = null;
 const ADMIN_EMAIL = 'admin@D-QueenCart.in';
-const ADMIN_PASS = 'Priya!@Dharshini#Perumal@30091987%&*';
 const firebaseReady = typeof firebase !== 'undefined' && firebase.apps?.length > 0;
 
 // If already logged in via Firebase, show logged-in state
@@ -278,28 +278,6 @@ async function submitAuth() {
   const email    = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  // ✅ ADMIN LOGIN — also signs in to Firebase so Firestore rules pass
-  if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
-
-    sessionStorage.setItem('D-QueenCart_admin', '1');
-    localStorage.setItem('dqueencart_user', JSON.stringify({
-      name: 'Admin', email, uid: 'admin', role: 'admin'
-    }));
-
-    // Sign in to Firebase Auth so request.auth is set in Firestore rules
-    if (firebaseReady) {
-      try {
-        await firebase.auth().signInWithEmailAndPassword(email, password);
-      } catch (fbErr) {
-        console.warn('Firebase admin sign-in failed:', fbErr.message);
-        // Still allow admin access locally even if Firebase Auth fails
-      }
-    }
-
-    showAlert('alertOk', '✅ Admin login successful!');
-    setTimeout(() => { window.location.href = 'admin.html'; }, 800);
-    return;
-  }
   if (password.length < 6) { showFerr('passErr','Password must be at least 6 characters'); return; }
   clearAlerts();
 

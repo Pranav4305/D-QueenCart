@@ -1708,6 +1708,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script src="cart.js"></script>
+  <script src="shared.js"></script>
   <script>
     AOS.init({ duration: 800, once: true, offset: 80 });
 
@@ -1717,51 +1718,6 @@
       document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
     });
 
-    // ── Nav Auth (shows Hi, Admin or Hi, UserName) ──────────────
-    function initNavAuth() {
-      const navSignIn = document.getElementById('navSignIn');
-      const navUser = document.getElementById('navUser');
-      const navUserName = document.getElementById('navUserName');
-      const adminBtn = document.getElementById('navAdminBtn');
-
-      function applyUser(name, isAdmin) {
-        navSignIn.style.display = 'none';
-        navUser.style.display = 'flex';
-        navUserName.textContent = 'Hi, ' + name.split(' ')[0];
-
-        if (adminBtn) {
-          adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
-        }
-      }
-
-      const isAdminSession = sessionStorage.getItem('D-QueenCart_admin') === '1';
-      if (isAdminSession) { applyUser('Admin', true); return; }
-
-      try {
-        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-          firebase.auth().onAuthStateChanged(u => {
-            if (u) {
-              const isAdminFirebase = u.email === 'admin@D-QueenCart.in';
-              applyUser(u.displayName || u.email.split('@')[0] || 'User', isAdminFirebase);
-            } else { checkLocalUser(); }
-          });
-        } else { checkLocalUser(); }
-      } catch { checkLocalUser(); }
-
-      function checkLocalUser() {
-        const su = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
-        if (su && su.name) { applyUser(su.name, su.role === 'admin'); }
-      }
-    }
-
-    function goToAccount(e) {
-      if (e) e.preventDefault();
-      const isAdmin = sessionStorage.getItem('D-QueenCart_admin') === '1';
-      if (isAdmin) { window.location.href = "admin.html"; return; }
-      const storedUser = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
-      if (storedUser && storedUser.role === 'admin') { window.location.href = "admin.html"; }
-      else { window.location.href = "auth.html"; }
-    }
 
     const sampleProducts = [
       { id: 's1', name: 'Golden Leaf Necklace', price: 1499, image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=500&q=80', category: 'necklaces', badge: 'Bestseller' },
@@ -1899,11 +1855,6 @@
       showToast(res.msg);
     }
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
 
     function subscribeNewsletter(e) {
       e.preventDefault();
@@ -1913,7 +1864,6 @@
 
     // Init on load
     loadProducts();
-    initNavAuth();
   </script>
 
 

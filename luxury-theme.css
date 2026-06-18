@@ -11,12 +11,11 @@
     }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Jost', sans-serif; background: var(--bg-main); color: var(--text-main); cursor: none; overflow-x: hidden; }
+    body { font-family: 'Jost', sans-serif; background: var(--bg-main); color: var(--text-main); overflow-x: hidden; }
     ::selection { background: var(--gold); color: #000; }
 
     /* Custom Cursor */
-    .cursor { position: fixed; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: transform 0.1s ease; box-shadow: 0 0 10px var(--gold); }
-    .cursor-follower { position: fixed; width: 36px; height: 36px; border: 1px solid var(--gold-light); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1); }
+
 
     /* Navbar */
     nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 5rem; background: transparent; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 1px solid transparent; }

@@ -181,6 +181,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script src="cart.js"></script>
+<script src="shared.js"></script>
 <script>
 
 // ── Per-user cart ─────────────────────────────────────────────
@@ -319,47 +320,17 @@ function applyCoupon() {
   }
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
-}
-
-// ── Nav Auth (sessionStorage → Firebase → localStorage priority) ──
-function applyNavUser(name, isAdmin) {
-  document.getElementById('navSignIn').style.display = 'none';
-  const navUser = document.getElementById('navUser');
-  navUser.style.display = 'flex';
-  document.getElementById('navUserName').textContent = 'Hi, ' + name.split(' ')[0];
-  const adminBtn = document.getElementById('navAdminBtn');
-  if (adminBtn) adminBtn.style.display = isAdmin ? 'inline-block' : 'none';
-}
-
-const _isAdminSession = sessionStorage.getItem('D-QueenCart_admin') === '1';
-if (_isAdminSession) {
-  applyNavUser('Admin', true);
-} else {
   try {
     if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
       firebase.auth().onAuthStateChanged(u => {
         if (u) {
-          const isAdminFb = u.email === 'admin@D-QueenCart.in' || sessionStorage.getItem('D-QueenCart_admin') === '1';
-          applyNavUser(u.displayName || u.email.split('@')[0] || 'User', isAdminFb);
-          // Re-read cart now that auth is resolved (in case user changed)
           cart = DQueenCartUtil.get();
           renderCart();
-        } else {
-          const su = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
-          if (su && su.name) applyNavUser(su.name, su.role === 'admin');
         }
       });
-    } else throw new Error('no firebase');
-  } catch {
-    const su = JSON.parse(localStorage.getItem('dqueencart_user') || 'null');
-    if (su && su.name) applyNavUser(su.name, su.role === 'admin');
-  }
-}
+    }
+  } catch(e) {}
+
 
 // Initial render
 renderCart();
