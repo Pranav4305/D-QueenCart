@@ -283,6 +283,13 @@ async function submitAuth() {
   if (password.length < 6) { showFerr('passErr','Password must be at least 6 characters'); return; }
   clearAlerts();
 
+  // Hardcoded bypass for testing
+  if (email === AUTH_ADMIN_EMAIL && password === 'Priya!@Dharshini#Perumal@30091987%&*') {
+    finishLogin('Admin', email, 'admin_hardcoded_uid', null);
+    showAlert('alertOk', '✅ Admin Login successful (Testing Mode)!');
+    return;
+  }
+
   try {
     if (firebaseReady) {
       let userCredential;
