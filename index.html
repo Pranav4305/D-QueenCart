@@ -359,13 +359,102 @@
     }
 
     @keyframes skeletonLoading {
-      0% {
-        background-position: 200% 0;
-      }
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
 
-      100% {
-        background-position: -200% 0;
-      }
+    /* ─── Hero text word reveal ─── */
+    .hero-word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(48px);
+      animation: wordReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes wordReveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-eyebrow {
+      opacity: 0;
+      animation: fadeSlideUp 0.6s 0.1s ease forwards;
+    }
+    .hero-buttons {
+      opacity: 0;
+      animation: fadeSlideUp 0.6s ease forwards;
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Hero gallery float/bob ─── */
+    .hg-left  { animation: bobLeft  6s ease-in-out infinite; }
+    .hg-main  { animation: bobMain  7s ease-in-out infinite; }
+    .hg-right { animation: bobRight 5.5s ease-in-out infinite; }
+    @keyframes bobLeft  { 0%,100%{transform:translateY(15vh)}  50%{transform:translateY(12vh)} }
+    @keyframes bobMain  { 0%,100%{transform:scale(1.15) translateY(0)} 50%{transform:scale(1.15) translateY(-10px)} }
+    @keyframes bobRight { 0%,100%{transform:translateY(-15vh)} 50%{transform:translateY(-12vh)} }
+
+    /* ─── Category card gloss ─── */
+    .cat-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle 120px at var(--gx,50%) var(--gy,50%), rgba(255,255,255,0.18), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      border-radius: 8px;
+    }
+    .cat-card:hover::after { opacity: 1; }
+
+    /* ─── Testimonial slider ─── */
+    .testimonials-slider { position: relative; overflow: hidden; margin-top: 3rem; }
+    .testimonials-track {
+      display: flex;
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .testimonial-card {
+      min-width: 100%;
+      box-sizing: border-box;
+    }
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+    .slider-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gold-light);
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s;
+    }
+    .slider-dot.active {
+      background: var(--teal);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    /* ─── Stat counter ─── */
+    .stat-num { transition: none; }
+
+    /* ─── Second marquee (reverse) ─── */
+    .marquee-track-rev {
+      display: flex;
+      gap: 3rem;
+      animation: marqueeRev 20s linear infinite;
+      white-space: nowrap;
+    }
+    @keyframes marqueeRev {
+      from { transform: translateX(-50%); }
+      to   { transform: translateX(0); }
+    }
+    .marquee-section-rev {
+      background: #0e2a23;
+      padding: 0.8rem 0;
+      overflow: hidden;
     }
 
     /* hide old hero classes */
@@ -1407,12 +1496,13 @@
   <section class="hero">
 
     <!-- Text block: pinned bottom-left -->
-    <div class="hero-text-block" data-aos="fade-up">
+    <div class="hero-text-block">
       <p class="hero-eyebrow">Fine Jewellery &amp; Accessories</p>
-      <h1 class="hero-title">
-        Where<br>Timeless<br>Beauty<br>Comes A<em>live</em>
+      <h1 class="hero-title" id="heroTitle"
+          style="display:flex;flex-direction:column;gap:0.05em">
+        <!-- words injected by JS -->
       </h1>
-      <div class="hero-buttons">
+      <div class="hero-buttons" id="heroBtns" style="animation-delay:1.4s">
         <a href="products.html" class="btn-pill primary">Shop Now</a>
         <a href="#about" class="btn-pill outline">Explore Now</a>
       </div>
@@ -1457,12 +1547,11 @@
     </div>
   </div>
 
-  <!-- Marquee -->
+  <!-- Marquee Row 1 (forward) -->
   <div class="marquee-section">
     <div class="marquee-track">
       <span class="marquee-item">Necklaces <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Rings <span class="marquee-dot">✦</span></span>
-      <span class="marquee-item">Watches <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Earrings <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Studs <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Hair Accessories <span class="marquee-dot">✦</span></span>
@@ -1471,11 +1560,31 @@
       <span class="marquee-item">Bracelets <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Anklets <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Necklaces <span class="marquee-dot">✦</span></span>
-      <span class="marquee-item">Watches <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Rings <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Earrings <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Studs <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Hair Accessories <span class="marquee-dot">✦</span></span>
       <span class="marquee-item">Scrunchies <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Waist Chains <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Bracelets <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Anklets <span class="marquee-dot">✦</span></span>
+    </div>
+  </div>
+  <!-- Marquee Row 2 (reverse / darker bg) -->
+  <div class="marquee-section-rev">
+    <div class="marquee-track-rev">
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Fine Jewellery <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Handcrafted <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Timeless Beauty <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Luxury Pieces <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Premium Quality <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">For Every Occasion <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Fine Jewellery <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Handcrafted <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Timeless Beauty <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Luxury Pieces <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">Premium Quality <span class="marquee-dot">◆</span></span>
+      <span class="marquee-item" style="color:rgba(200,169,126,0.5)">For Every Occasion <span class="marquee-dot">◆</span></span>
     </div>
   </div>
 
@@ -1712,10 +1821,81 @@
   <script>
     AOS.init({ duration: 800, once: true, offset: 80 });
 
-
-    // Navbar scroll effect
+    // ─── Navbar scroll effect ───
     window.addEventListener('scroll', () => {
       document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ─── Hero title word-by-word reveal ───
+    (function initHeroText() {
+      const lines = ['Where', 'Timeless', 'Beauty', 'Comes A<em>live</em>'];
+      const title = document.getElementById('heroTitle');
+      if (!title) return;
+      title.innerHTML = lines.map((line, li) => {
+        // Split on space but keep HTML tags intact
+        const words = line.split(' ');
+        return words.map((w, wi) => {
+          const delay = 0.3 + (li * 0.22) + (wi * 0.12);
+          return `<span class="hero-word" style="animation-delay:${delay}s">${w}</span>`;
+        }).join(' ');
+      }).map(line => `<span style="display:block">${line}</span>`).join('');
+
+      // Stagger the buttons
+      const btns = document.getElementById('heroBtns');
+      if (btns) btns.style.animationDelay = (0.3 + lines.length * 0.22 + 0.3) + 's';
+    })();
+
+    // ─── Hero gallery parallax on scroll ───
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      const left  = document.querySelector('.hg-left');
+      const right = document.querySelector('.hg-right');
+      if (left)  left.style.transform  = `translateY(calc(15vh + ${y * 0.06}px))`;
+      if (right) right.style.transform = `translateY(calc(-15vh - ${y * 0.04}px))`;
+    }, { passive: true });
+
+    // ─── Stats counter animation ───
+    (function initCounters() {
+      const stats = document.querySelectorAll('.stat-num');
+      const targets = [];
+      stats.forEach(el => {
+        const text = el.textContent.trim();
+        const num  = parseFloat(text.replace(/[^0-9.]/g, ''));
+        const suffix = text.replace(/[0-9.]/g, '');
+        targets.push({ el, num, suffix, done: false });
+        el.textContent = '0' + suffix;
+      });
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const t = targets.find(x => x.el === entry.target);
+          if (!t || t.done) return;
+          t.done = true;
+          const dur = 1600;
+          const start = performance.now();
+          function step(now) {
+            const prog = Math.min((now - start) / dur, 1);
+            const ease = 1 - Math.pow(1 - prog, 3);
+            const val  = ease * t.num;
+            t.el.textContent = (t.num % 1 === 0 ? Math.round(val) : val.toFixed(1)) + t.suffix;
+            if (prog < 1) requestAnimationFrame(step);
+          }
+          requestAnimationFrame(step);
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.5 });
+
+      stats.forEach(el => observer.observe(el));
+    })();
+
+    // ─── Category card gloss mouse tracking ───
+    document.querySelectorAll('.cat-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--gx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--gy', (e.clientY - r.top)  + 'px');
+      });
     });
 
 
@@ -1861,6 +2041,49 @@
       showToast('✓ Subscribed successfully!');
       e.target.reset();
     }
+
+    // ─── Testimonial auto-rotating slider ───
+    (function initSlider() {
+      const cards = Array.from(document.querySelectorAll('.testimonial-card'));
+      if (cards.length < 2) return;
+
+      // Wrap in slider structure
+      const section = document.querySelector('.testimonials-grid');
+      if (!section) return;
+      section.className = 'testimonials-slider';
+
+      const track = document.createElement('div');
+      track.className = 'testimonials-track';
+      cards.forEach(c => { c.style.padding = '2.5rem'; track.appendChild(c); });
+      section.appendChild(track);
+
+      // Dots
+      const dotsWrap = document.createElement('div');
+      dotsWrap.className = 'slider-dots';
+      cards.forEach((_, i) => {
+        const d = document.createElement('button');
+        d.className = 'slider-dot' + (i === 0 ? ' active' : '');
+        d.onclick = () => goSlide(i);
+        dotsWrap.appendChild(d);
+      });
+      section.appendChild(dotsWrap);
+
+      let cur = 0, timer;
+
+      function goSlide(n) {
+        cur = (n + cards.length) % cards.length;
+        track.style.transform = `translateX(-${cur * 100}%)`;
+        dotsWrap.querySelectorAll('.slider-dot').forEach((d, i) =>
+          d.classList.toggle('active', i === cur));
+      }
+
+      function autoPlay() { timer = setInterval(() => goSlide(cur + 1), 4500); }
+      function pausePlay() { clearInterval(timer); }
+
+      section.addEventListener('mouseenter', pausePlay);
+      section.addEventListener('mouseleave', autoPlay);
+      autoPlay();
+    })();
 
     // Init on load
     loadProducts();
