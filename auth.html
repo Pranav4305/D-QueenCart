@@ -203,7 +203,8 @@
 <script>
 
 let userExists = null;
-const ADMIN_EMAIL = 'admin@D-QueenCart.in';
+// ADMIN_EMAIL is already declared in shared.js — use window reference to avoid SyntaxError
+const AUTH_ADMIN_EMAIL = (typeof ADMIN_EMAIL !== 'undefined') ? ADMIN_EMAIL : 'admin@D-QueenCart.in';
 const firebaseReady = typeof firebase !== 'undefined' && firebase.apps?.length > 0;
 
 // If already logged in via Firebase, show logged-in state
@@ -212,7 +213,7 @@ if (firebaseReady) {
     if (u) {
       renderLoggedIn(u);
       // Auto-redirect admin users directly
-      if (u.email === ADMIN_EMAIL) {
+      if (u.email === AUTH_ADMIN_EMAIL) {
         sessionStorage.setItem('D-QueenCart_admin', '1');
         // Don't auto-redirect — let them click the button
       }
@@ -327,7 +328,7 @@ async function submitAuth() {
 }
 
 function finishLogin(name, email, uid, photo) {
-  const isAdminEmail = email === ADMIN_EMAIL;
+  const isAdminEmail = email === AUTH_ADMIN_EMAIL;
   localStorage.setItem('dqueencart_user', JSON.stringify({
     name, email, uid, photo: photo || null,
     role: isAdminEmail ? 'admin' : 'customer'
@@ -425,7 +426,7 @@ function renderLoggedIn(user) {
       avatarEl.innerHTML = name.charAt(0).toUpperCase();
     }
   }
-  const isAdminUser = email === ADMIN_EMAIL;
+  const isAdminUser = email === AUTH_ADMIN_EMAIL;
   const storedRole = isAdminUser ? 'admin' : 'customer';
   localStorage.setItem('dqueencart_user', JSON.stringify({ name, email, uid: user.uid||'local', photo: user.photoURL||null, role: storedRole }));
   if (isAdminUser) sessionStorage.setItem('D-QueenCart_admin', '1');
