@@ -206,6 +206,10 @@ nav {
   color: var(--teal) !important;
 }
 
+.cat-count {
+  color: var(--gold) !important;
+}
+
 .product-price {
   font-weight: 400 !important;
   color: var(--gold) !important;
