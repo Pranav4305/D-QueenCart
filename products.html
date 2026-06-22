@@ -112,9 +112,68 @@
     .btn-cart-list:hover{background:var(--gold)}
 
     /* Pagination */
-    .pagination{display:flex;justify-content:center;gap:.5rem;padding:3rem 0}
-    .page-btn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:1px solid var(--gold-light);background:transparent;font-size:.82rem;color:var(--muted);cursor:pointer;transition:all .3s}
-    .page-btn.active,.page-btn:hover{background:var(--dark);color:var(--cream);border-color:var(--dark)}
+    .pagination{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:.4rem;
+      padding:3rem 0 2rem;
+      flex-wrap:wrap;
+    }
+    .page-btn{
+      min-width:40px;
+      height:40px;
+      padding:0 .6rem;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--gold-light);
+      background:transparent;
+      font-family:'Jost',sans-serif;
+      font-size:.82rem;
+      color:var(--muted);
+      cursor:pointer;
+      transition:all .25s ease;
+      letter-spacing:.05em;
+      border-radius:2px;
+    }
+    .page-btn:hover:not(:disabled):not(.page-ellipsis){
+      background:var(--dark);
+      color:var(--cream);
+      border-color:var(--dark);
+      transform:translateY(-1px);
+    }
+    .page-btn.active{
+      background:var(--dark);
+      color:var(--cream);
+      border-color:var(--dark);
+      font-weight:500;
+      pointer-events:none;
+    }
+    .page-btn:disabled{
+      opacity:.35;
+      cursor:not-allowed;
+      transform:none;
+    }
+    .page-btn.page-ellipsis{
+      border-color:transparent;
+      cursor:default;
+      color:var(--muted);
+      pointer-events:none;
+    }
+    .page-btn.page-arrow{
+      font-size:1rem;
+      color:var(--dark);
+      border-color:var(--gold-light);
+    }
+    .page-info{
+      font-size:.72rem;
+      color:var(--muted);
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      text-align:center;
+      padding-bottom:1.5rem;
+    }
 
     /* No results */
     .no-results{text-align:center;padding:5rem 0;color:var(--muted)}
@@ -224,6 +283,7 @@
     </div>
     <div class="products-grid" id="productsGrid"></div>
     <div class="pagination" id="pagination"></div>
+    <div class="page-info" id="pageInfo"></div>
   </div>
 </div>
 
@@ -242,7 +302,7 @@ const allProducts = [];
 
 let filteredProducts = [...allProducts];
 let currentPage = 1;
-const perPage = 6;
+const perPage = 9;
 let currentView = 'grid';
 
 function updatePrice(val) {
@@ -368,17 +428,57 @@ function renderProducts() {
   }
 
   // Pagination
-  const totalPages = Math.ceil(filteredProducts.length / perPage);
-  if (totalPages > 1) {
-    document.getElementById('pagination').innerHTML = Array.from({length:totalPages},(_,i) =>
-      `<button class="page-btn ${i+1===currentPage?'active':''}" onclick="goPage(${i+1})">${i+1}</button>`
-    ).join('');
-  } else {
-    document.getElementById('pagination').innerHTML = '';
-  }
+  renderPagination(Math.ceil(filteredProducts.length / perPage));
 }
 
-function goPage(n) { currentPage=n; renderProducts(); window.scrollTo({top:300,behavior:'smooth'}); }
+function renderPagination(totalPages) {
+  const pag = document.getElementById('pagination');
+  const info = document.getElementById('pageInfo');
+  if (totalPages <= 1) {
+    pag.innerHTML = '';
+    if(info) info.textContent = '';
+    return;
+  }
+
+  // Build page number array with ellipsis
+  function getPageNumbers(cur, total) {
+    if (total <= 7) return Array.from({length:total},(_,i)=>i+1);
+    const pages = [1];
+    if (cur > 3) pages.push('...');
+    const start = Math.max(2, cur - 1);
+    const end   = Math.min(total - 1, cur + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (cur < total - 2) pages.push('...');
+    pages.push(total);
+    return pages;
+  }
+
+  const nums = getPageNumbers(currentPage, totalPages);
+
+  let html = '';
+  // Prev button
+  html += `<button class="page-btn page-arrow" ${currentPage===1?'disabled':''} onclick="goPage(${currentPage-1})" title="Previous">&#8592;</button>`;
+
+  nums.forEach(n => {
+    if (n === '...') {
+      html += `<button class="page-btn page-ellipsis">…</button>`;
+    } else {
+      html += `<button class="page-btn ${n===currentPage?'active':''}" onclick="goPage(${n})">${n}</button>`;
+    }
+  });
+
+  // Next button
+  html += `<button class="page-btn page-arrow" ${currentPage===totalPages?'disabled':''} onclick="goPage(${currentPage+1})" title="Next">&#8594;</button>`;
+
+  pag.innerHTML = html;
+  if(info) info.textContent = `Page ${currentPage} of ${totalPages}`;
+}
+
+function goPage(n) {
+  currentPage = n;
+  renderProducts();
+  window.scrollTo({top: document.querySelector('.products-toolbar')?.offsetTop - 90 || 300, behavior:'smooth'});
+}
 
 function addToCart(id) {
   const p = allProducts.find(x => String(x.id) === String(id));
