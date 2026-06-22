@@ -2098,7 +2098,7 @@
       const catGrid = document.getElementById('categoriesGrid');
       if (catGrid) {
         const activeCategories = Object.keys(cats);
-        catGrid.innerHTML = activeCategories.map((slug, idx) => {
+        let html = activeCategories.map((slug, idx) => {
           const prodList = cats[slug];
           const prod = shuffleArray(prodList)[0];
           
@@ -2113,6 +2113,20 @@
           </div>
         `;
         }).join('');
+
+        // Fill the empty space with a "Shop All" card using a random product image
+        if (activeCategories.length % 4 !== 0) {
+          const randomProd = shuffleArray([...products])[0];
+          html += `
+          <div class="cat-card" data-aos="fade-up" data-aos-delay="${(activeCategories.length % 4) * 100}" onclick="window.location='products.html'">
+            <img src="${randomProd ? randomProd.image : ''}" alt="Shop All" style="object-fit: cover;" />
+            <div class="cat-overlay"><div class="cat-name">Shop All</div><div class="cat-count">Explore Collection</div></div>
+            <div class="cat-arrow">→</div>
+          </div>
+          `;
+        }
+
+        catGrid.innerHTML = html;
       }
     }
 
