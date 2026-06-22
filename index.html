@@ -712,11 +712,60 @@
       overflow: hidden;
     }
 
+    .editorial-img-slider {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      overflow: hidden;
+      cursor: pointer;
+      background: #f0ece6;
+    }
+
     .editorial-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      min-height: 400px;
+      transition: opacity 0.8s ease-in-out, transform 5s ease-in-out;
+      transform: scale(1);
+    }
+
+    .editorial-img.fade {
+      opacity: 0.3;
+      transform: scale(1.05);
+    }
+
+    .editorial-img-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2.5rem 2rem 2rem;
+      background: linear-gradient(to top, rgba(14, 42, 35, 0.85), transparent);
+      color: var(--cream);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    
+    .editorial-img-slider.ready .editorial-img-overlay {
+      opacity: 1;
+    }
+
+    .editorial-product-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      margin-bottom: 0.2rem;
+      color: white;
+    }
+
+    .editorial-product-price {
+      font-family: 'Jost', sans-serif;
+      color: var(--gold);
+      font-size: 1.1rem;
+      font-weight: 500;
     }
 
     .editorial-text {
@@ -1639,8 +1688,16 @@
 
   <!-- Editorial Banner -->
   <section class="editorial-banner">
-    <img class="editorial-img" src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=900&q=80"
-      alt="Golden jewelry collection" data-aos="fade-right" data-aos-duration="1000" />
+    <div class="editorial-img-slider" id="newArrivalsSlider" data-aos="fade-right" data-aos-duration="1000" onclick="if(window.currentNewArrivalId) window.location='products.html?id='+window.currentNewArrivalId">
+      <img class="editorial-img skeleton" id="editorialImg" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Loading..." />
+      <div class="editorial-img-overlay">
+        <div>
+          <div class="editorial-product-name" id="editorialName">Loading...</div>
+          <div style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.7)">Featured Piece</div>
+        </div>
+        <div class="editorial-product-price" id="editorialPrice"></div>
+      </div>
+    </div>
     <div class="editorial-text" data-aos="fade-left" data-aos-duration="1000">
       <p class="section-tag">New Arrival</p>
       <h2>The Golden Hour Collection</h2>
@@ -1947,20 +2004,24 @@
               : localProds;
             updateHeroImages(prods);
             updateCategories(prods);
+            updateNewArrivals(prods);
             renderProducts(shuffleArray(prods).slice(0, 4));
           }).catch(() => {
             updateHeroImages(localProds);
             updateCategories(localProds);
+            updateNewArrivals(localProds);
             renderProducts(shuffleArray(localProds).slice(0, 4));
           });
         } else {
           updateHeroImages(localProds);
           updateCategories(localProds);
+          updateNewArrivals(localProds);
           renderProducts(shuffleArray(localProds).slice(0, 4));
         }
       } catch {
         updateHeroImages(localProds);
         updateCategories(localProds);
+        updateNewArrivals(localProds);
         renderProducts(shuffleArray(localProds).slice(0, 4));
       }
     }
@@ -2022,6 +2083,65 @@
           </div>
         `;
         }).join('');
+      }
+    }
+
+    // ─── Update New Arrivals Slider ───
+    let newArrivalsInterval;
+    function updateNewArrivals(products) {
+      if (!products || products.length === 0) return;
+      
+      // Try to find products with 'New' badge, fallback to latest/random
+      let newProds = products.filter(p => p.badge && p.badge.toLowerCase() === 'new');
+      if (newProds.length < 2) {
+        newProds = products.filter(p => p.badge && (p.badge.toLowerCase() === 'new' || p.badge.toLowerCase() === 'bestseller'));
+      }
+      if (newProds.length < 2) {
+        newProds = shuffleArray([...products]).slice(0, 4);
+      }
+
+      const imgEl = document.getElementById('editorialImg');
+      const nameEl = document.getElementById('editorialName');
+      const priceEl = document.getElementById('editorialPrice');
+      const slider = document.getElementById('newArrivalsSlider');
+      
+      let currentIndex = 0;
+
+      function showProduct(index) {
+        const p = newProds[index];
+        if (!p) return;
+
+        window.currentNewArrivalId = p.id;
+        
+        // fade out
+        imgEl.classList.add('fade');
+        slider.classList.remove('ready');
+
+        setTimeout(() => {
+          const newImg = new Image();
+          newImg.onload = () => {
+            imgEl.src = newImg.src;
+            imgEl.alt = p.name;
+            nameEl.textContent = p.name;
+            priceEl.textContent = `₹${p.price.toLocaleString()}`;
+            imgEl.classList.remove('skeleton');
+            
+            // fade in
+            imgEl.classList.remove('fade');
+            slider.classList.add('ready');
+          };
+          newImg.src = p.image;
+        }, 800); // Wait for fade out
+      }
+
+      showProduct(0);
+
+      if (newProds.length > 1) {
+        if (newArrivalsInterval) clearInterval(newArrivalsInterval);
+        newArrivalsInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % newProds.length;
+          showProduct(currentIndex);
+        }, 5000); // Change every 5 seconds
       }
     }
 
