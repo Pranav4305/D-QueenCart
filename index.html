@@ -2085,26 +2085,30 @@
       });
 
       const categoryEls = {
-        necklaces: { name: 'Necklaces', count: 'Chokers & Chains', icon: 'https://images.unsplash.com/photo-1599643478524-fb66f70a00eb?auto=format&fit=crop&w=500' },
-        bracelets: { name: 'Bracelets', count: 'Delicate & Bold', icon: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=500' },
-        earrings: { name: 'Earrings', count: 'Studs to Hoops', icon: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=500' },
-        studs: { name: 'Studs', count: 'Elegant & Minimal', icon: 'https://images.unsplash.com/photo-1590548784585-643d2b9f2925?auto=format&fit=crop&w=500' },
-        rings: { name: 'Rings', count: 'Statement & Stacking', icon: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=500' },
-        scrunchies: { name: 'Scrunchies', count: 'Silk & Velvet', icon: 'https://images.unsplash.com/photo-1586495777744-4e6232bf2eba?auto=format&fit=crop&w=500' },
-        watches: { name: 'Watches', count: 'Classic & Modern', icon: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=500' },
-        anklets: { name: 'Anklets', count: 'Barefoot Elegance', icon: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=500' }
+        necklaces: { name: 'Necklaces', count: 'Chokers & Chains' },
+        bracelets: { name: 'Bracelets', count: 'Delicate & Bold' },
+        earrings: { name: 'Earrings', count: 'Studs to Hoops' },
+        studs: { name: 'Studs', count: 'Elegant & Minimal' },
+        rings: { name: 'Rings', count: 'Statement & Stacking' },
+        scrunchies: { name: 'Scrunchies', count: 'Silk & Velvet' },
+        watches: { name: 'Watches', count: 'Classic & Modern' },
+        anklets: { name: 'Anklets', count: 'Barefoot Elegance' }
       };
 
       const catGrid = document.getElementById('categoriesGrid');
       if (catGrid) {
-        catGrid.innerHTML = Object.entries(categoryEls).map(([slug, meta], idx) => {
-          const prod = cats[slug] ? shuffleArray(cats[slug])[0] : null;
-          // If no product in this category, borrow a random uploaded product's image to ensure NO stock photos are shown
-          const img = prod ? prod.image : (products.length > 0 ? shuffleArray([...products])[0].image : meta.icon);
+        const activeCategories = Object.keys(cats);
+        catGrid.innerHTML = activeCategories.map((slug, idx) => {
+          const prodList = cats[slug];
+          const prod = shuffleArray(prodList)[0];
+          
+          const metaName = categoryEls[slug] ? categoryEls[slug].name : (slug.charAt(0).toUpperCase() + slug.slice(1));
+          const metaCount = categoryEls[slug] ? categoryEls[slug].count : `${prodList.length} Items`;
+          
           return `
-          <div class="cat-card" data-aos="fade-up" data-aos-delay="${idx * 100}" onclick="window.location='products.html?cat=${slug}'">
-            <img src="${img}" alt="${meta.name}" style="${prod ? 'object-fit: cover;' : ''}" />
-            <div class="cat-overlay"><div class="cat-name">${meta.name}</div><div class="cat-count">${meta.count}</div></div>
+          <div class="cat-card" data-aos="fade-up" data-aos-delay="${(idx % 4) * 100}" onclick="window.location='products.html?cat=${slug}'">
+            <img src="${prod.image}" alt="${metaName}" style="object-fit: cover;" />
+            <div class="cat-overlay"><div class="cat-name">${metaName}</div><div class="cat-count">${metaCount}</div></div>
             <div class="cat-arrow">→</div>
           </div>
         `;
