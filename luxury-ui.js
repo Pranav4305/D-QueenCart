@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 position: fixed;
                 width: 8px;
                 height: 8px;
-                background: #c8a97e;
+                background: #1a3a32;
                 border-radius: 50%;
                 pointer-events: none;
                 z-index: 99999;
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 position: fixed;
                 width: 36px;
                 height: 36px;
-                border: 1.5px solid rgba(200, 169, 126, 0.7);
+                border: 1.5px solid rgba(26, 58, 50, 0.7);
                 border-radius: 50%;
                 pointer-events: none;
                 z-index: 99998;
@@ -48,12 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
             body.lux-cursor-hover #lux-cursor-dot {
                 width: 12px;
                 height: 12px;
-                background: #e8c98a;
+                background: #2a5a4a;
             }
             body.lux-cursor-hover #lux-cursor-ring {
                 width: 52px;
                 height: 52px;
-                border-color: rgba(200, 169, 126, 0.9);
+                border-color: rgba(26, 58, 50, 0.9);
             }
             body.lux-cursor-click #lux-cursor-dot {
                 transform: translate(-50%, -50%) scale(0.6);
