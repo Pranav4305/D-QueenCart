@@ -203,6 +203,7 @@ nav {
   font-size: 1.35rem !important;
   font-weight: 300 !important;
   letter-spacing: 0.03em !important;
+  color: var(--teal) !important;
 }
 
 .product-price {
