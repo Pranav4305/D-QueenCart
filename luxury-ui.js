@@ -1,6 +1,130 @@
 document.addEventListener("DOMContentLoaded", () => {
     const isAdmin = window.location.pathname.includes('admin.html');
 
+    // ─── Custom Cursor (dot inside circle) ────────────────────────────────────
+    // Only on non-touch / desktop devices
+    if (window.matchMedia('(pointer: fine)').matches) {
+        // 1. Inject CSS
+        const cursorStyle = document.createElement('style');
+        cursorStyle.textContent = `
+            #lux-cursor-dot {
+                position: fixed;
+                width: 8px;
+                height: 8px;
+                background: #c8a97e;
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 99999;
+                transform: translate(-50%, -50%);
+                transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+                will-change: top, left;
+            }
+            #lux-cursor-ring {
+                position: fixed;
+                width: 36px;
+                height: 36px;
+                border: 1.5px solid rgba(200, 169, 126, 0.7);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 99998;
+                transform: translate(-50%, -50%);
+                transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+                will-change: top, left;
+                opacity: 0;
+            }
+            body.lux-cursor-ready,
+            body.lux-cursor-ready *,
+            body.lux-cursor-ready a,
+            body.lux-cursor-ready button,
+            body.lux-cursor-ready input,
+            body.lux-cursor-ready select,
+            body.lux-cursor-ready textarea,
+            body.lux-cursor-ready label {
+                cursor: none !important;
+            }
+            body.lux-cursor-ready #lux-cursor-ring {
+                opacity: 1;
+            }
+            body.lux-cursor-hover #lux-cursor-dot {
+                width: 12px;
+                height: 12px;
+                background: #e8c98a;
+            }
+            body.lux-cursor-hover #lux-cursor-ring {
+                width: 52px;
+                height: 52px;
+                border-color: rgba(200, 169, 126, 0.9);
+            }
+            body.lux-cursor-click #lux-cursor-dot {
+                transform: translate(-50%, -50%) scale(0.6);
+            }
+            body.lux-cursor-click #lux-cursor-ring {
+                width: 28px;
+                height: 28px;
+            }
+        `;
+        document.head.appendChild(cursorStyle);
+
+        // 2. Create elements
+        const dot  = document.createElement('div');
+        dot.id = 'lux-cursor-dot';
+        const ring = document.createElement('div');
+        ring.id = 'lux-cursor-ring';
+        document.body.appendChild(dot);
+        document.body.appendChild(ring);
+
+        // 3. Track mouse — dot follows instantly, ring lags slightly
+        let mx = -100, my = -100;  // start off-screen
+        let rx = -100, ry = -100;
+        let rafId;
+
+        document.addEventListener('mousemove', (e) => {
+            mx = e.clientX;
+            my = e.clientY;
+            dot.style.left = mx + 'px';
+            dot.style.top  = my + 'px';
+            document.body.classList.add('lux-cursor-ready');
+        });
+
+        // Smooth lag for ring
+        function animateRing() {
+            rx += (mx - rx) * 0.12;
+            ry += (my - ry) * 0.12;
+            ring.style.left = rx + 'px';
+            ring.style.top  = ry + 'px';
+            rafId = requestAnimationFrame(animateRing);
+        }
+        animateRing();
+
+        // 4. Hover expand — detect interactive elements
+        const hoverTargets = 'a, button, input, select, textarea, label, [role="button"], .product-card, .cat-card, .btn-hero, .btn-shop, .btn-nav';
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest(hoverTargets)) {
+                document.body.classList.add('lux-cursor-hover');
+            }
+        });
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest(hoverTargets)) {
+                document.body.classList.remove('lux-cursor-hover');
+            }
+        });
+
+        // 5. Click feedback
+        document.addEventListener('mousedown', () => document.body.classList.add('lux-cursor-click'));
+        document.addEventListener('mouseup',   () => document.body.classList.remove('lux-cursor-click'));
+
+        // 6. Hide when leaving window
+        document.addEventListener('mouseleave', () => {
+            dot.style.opacity  = '0';
+            ring.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            dot.style.opacity  = '1';
+            ring.style.opacity = '1';
+        });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     if (!isAdmin) {
         // 1. Inject Lenis Smooth Scrolling
         const script = document.createElement('script');
