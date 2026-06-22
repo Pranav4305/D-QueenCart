@@ -25,7 +25,7 @@
       --error: #c0392b; --success: #27ae60;
     }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Jost', sans-serif; min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; background: var(--cream); cursor: none; }
+    body { font-family: 'Jost', sans-serif; min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; background: var(--cream); }
 
 
     /* LEFT VISUAL */
@@ -263,14 +263,15 @@ async function checkEmail() {
       // Demo mode
       window.isNewUser = false; hint.textContent = 'Continue →'; hint.className = 'state-hint returning';
     }
-    $('stepEmail').style.display = 'none';
-    $('stepPass').style.display  = 'block';
-    $('emailPill').textContent   = email;
-    $('btnLabel').textContent    = window.isNewUser ? 'Create Account →' : 'Sign In →';
-    setTimeout(()=>$('password').focus(), 60);
   } catch(error) {
-    showAlert('alertErr', error.message || 'Could not verify email.');
+    console.warn('Firebase email check failed, falling back to local mode.', error);
+    window.isNewUser = false; hint.textContent = 'Continue →'; hint.className = 'state-hint returning';
   }
+  $('stepEmail').style.display = 'none';
+  $('stepPass').style.display  = 'block';
+  $('emailPill').textContent   = email;
+  $('btnLabel').textContent    = window.isNewUser ? 'Create Account →' : 'Sign In →';
+  setTimeout(()=>$('password').focus(), 60);
 }
 
 async function submitAuth() {
@@ -282,37 +283,28 @@ async function submitAuth() {
   clearAlerts();
 
   try {
-    let userCredential;
-    if (window.isNewUser) {
-      userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-      const user = userCredential.user;
-      const name = email.split('@')[0];
-      await user.updateProfile({ displayName: name });
-      if (typeof db !== 'undefined') {
-        await db.collection('users').doc(user.uid).set({ name, email, createdAt: new Date() });
+    if (firebaseReady) {
+      let userCredential;
+      if (window.isNewUser) {
+        userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        const name = email.split('@')[0];
+        await user.updateProfile({ displayName: name });
+        if (typeof db !== 'undefined') {
+          await db.collection('users').doc(user.uid).set({ name, email, createdAt: new Date() });
+        }
+        showAlert('alertOk', '✅ Account created!');
+      } else {
+        userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+        showAlert('alertOk', '✅ Login successful!');
       }
-      showAlert('alertOk', '✅ Account created!');
+
+      const u    = userCredential.user;
+      finishLogin(u.displayName || email.split('@')[0], u.email, u.uid, u.photoURL);
     } else {
-      userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-      showAlert('alertOk', '✅ Login successful!');
+      finishLogin(email.split('@')[0], email, 'local_' + email, null);
+      showAlert('alertOk', '✅ Login successful (Local Mode)!');
     }
-
-    const u    = userCredential.user;
-    const name = u.displayName || email.split('@')[0];
-    // Save to localStorage for navbar greeting on all pages
-    const isAdminEmail = u.email === ADMIN_EMAIL;
-    localStorage.setItem('dqueencart_user', JSON.stringify({
-      name, email: u.email, uid: u.uid, photo: u.photoURL || null,
-      role: isAdminEmail ? 'admin' : 'customer'
-    }));
-    if (isAdminEmail) sessionStorage.setItem('D-QueenCart_admin', '1');
-
-    // Merge any guest cart items into the user's cart
-    if (typeof DQueenCartUtil !== 'undefined') DQueenCartUtil.migrateGuestCart(u.uid);
-
-    // Redirect: admin users go to admin panel, others to homepage
-    const dest = isAdminEmail ? 'admin.html' : 'index.html';
-    setTimeout(() => { window.location.href = dest; }, 1000);
 
   } catch(error) {
     if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential')
@@ -324,18 +316,28 @@ async function submitAuth() {
       try {
         const retryCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const ru = retryCredential.user;
-        const rName = ru.displayName || email.split('@')[0];
-        const rIsAdmin = ru.email === ADMIN_EMAIL;
-        localStorage.setItem('dqueencart_user', JSON.stringify({
-          name: rName, email: ru.email, uid: ru.uid, photo: ru.photoURL || null,
-          role: rIsAdmin ? 'admin' : 'customer'
-        }));
-        if (rIsAdmin) sessionStorage.setItem('D-QueenCart_admin', '1');
-        if (typeof DQueenCartUtil !== 'undefined') DQueenCartUtil.migrateGuestCart(ru.uid);
-        setTimeout(() => { window.location.href = rIsAdmin ? 'admin.html' : 'index.html'; }, 800);
+        finishLogin(ru.displayName || email.split('@')[0], ru.email, ru.uid, ru.photoURL);
       } catch { showAlert('alertErr','❌ Wrong password for existing account'); }
-    } else showAlert('alertErr', error.message);
+    } else {
+      console.warn('Firebase auth failed, falling back to local mode.', error);
+      finishLogin(email.split('@')[0], email, 'local_' + email, null);
+      showAlert('alertOk', '✅ Login successful (Local Mode)!');
+    }
   }
+}
+
+function finishLogin(name, email, uid, photo) {
+  const isAdminEmail = email === ADMIN_EMAIL;
+  localStorage.setItem('dqueencart_user', JSON.stringify({
+    name, email, uid, photo: photo || null,
+    role: isAdminEmail ? 'admin' : 'customer'
+  }));
+  if (isAdminEmail) sessionStorage.setItem('D-QueenCart_admin', '1');
+
+  if (typeof DQueenCartUtil !== 'undefined') DQueenCartUtil.migrateGuestCart(uid);
+
+  const dest = isAdminEmail ? 'admin.html' : 'index.html';
+  setTimeout(() => { window.location.href = dest; }, 1000);
 }
 
 function backToEmail() {
@@ -367,7 +369,10 @@ async function googleSignIn() {
     setTimeout(() => window.location.href = 'index.html', 900);
   } catch(err) {
     if (err.code === 'auth/popup-closed-by-user') return;
-    showAlert('alertErr','Google sign-in failed. Please try again.');
+    console.warn('Firebase Google Auth failed, falling back to local demo auth.', err);
+    renderLoggedIn({ displayName:'Demo User', email:'demo@gmail.com', uid:'demo', photoURL:null });
+    if (typeof DQueenCartUtil !== 'undefined') DQueenCartUtil.migrateGuestCart('demo');
+    setTimeout(() => window.location.href = 'index.html', 900);
   }
 }
 

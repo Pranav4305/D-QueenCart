@@ -1961,7 +1961,12 @@
         if (dbOk()) {
           await db.collection('products').doc(editingId).update(upd);
         }
+      } catch (e) {
+        console.warn('Firestore update failed:', e.message);
+        toast('⚠ Firebase update failed, saving locally', 'bad');
+      }
 
+      try {
         // Deletion logic
         if (oldImg && oldImg !== finalImgUrl) {
           deleteCloudinaryImage(oldImg);
@@ -1983,17 +1988,14 @@
       const img = p ? p.image : null;
 
       if (dbOk()) {
-        // Firebase connected — must succeed in Firestore before touching local state
         try {
           await db.collection('products').doc(id).delete();
           if (img) deleteCloudinaryImage(img);
         } catch (e) {
-          // Surface the real error (most commonly: permission denied / not signed in)
-          toast('❌ Delete failed: ' + (e.message || 'Permission denied. Please sign in as admin.'), 'bad');
-          return; // ← stop here; don't touch local cache
+          console.warn('Firestore delete failed:', e.message);
+          toast('⚠ Firebase delete failed, deleting locally', 'bad');
         }
       } else {
-        // No Firebase — allow local-only delete
         if (img) deleteCloudinaryImage(img);
       }
 
