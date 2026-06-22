@@ -1713,11 +1713,11 @@
   <!-- About Section -->
   <section class="about-section" id="about">
     <div class="about-imgs" data-aos="fade-right" data-aos-duration="1000">
-      <img class="about-img-1"
-        src="https://images.unsplash.com/photo-1584302179602-e4c3d3fd629d?auto=format&fit=crop&w=600&q=80"
+      <img class="about-img-1 skeleton" id="aboutImg1"
+        src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
         alt="Jewellery craft" />
-      <img class="about-img-2"
-        src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=400&q=80"
+      <img class="about-img-2 skeleton" id="aboutImg2"
+        src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
         alt="Necklace" />
       <div class="about-badge">Since<br>2015</div>
     </div>
@@ -1993,23 +1993,27 @@
             updateHeroImages(prods);
             updateCategories(prods);
             updateNewArrivals(prods);
+            updateAboutImages(prods);
             renderProducts(shuffleArray(prods).slice(0, 4));
           }).catch(() => {
             updateHeroImages(localProds);
             updateCategories(localProds);
             updateNewArrivals(localProds);
+            updateAboutImages(localProds);
             renderProducts(shuffleArray(localProds).slice(0, 4));
           });
         } else {
           updateHeroImages(localProds);
           updateCategories(localProds);
           updateNewArrivals(localProds);
+          updateAboutImages(localProds);
           renderProducts(shuffleArray(localProds).slice(0, 4));
         }
       } catch {
         updateHeroImages(localProds);
         updateCategories(localProds);
         updateNewArrivals(localProds);
+        updateAboutImages(localProds);
         renderProducts(shuffleArray(localProds).slice(0, 4));
       }
     }
@@ -2037,6 +2041,25 @@
           newImg.src = shuffled[i].image;
         }
       });
+    }
+
+    // Update About Us images
+    function updateAboutImages(products) {
+      if (!products || products.length < 2) return;
+      const shuffled = shuffleArray(products);
+      const img1 = document.getElementById('aboutImg1');
+      const img2 = document.getElementById('aboutImg2');
+      
+      if (img1 && shuffled[0]) {
+        const newImg1 = new Image();
+        newImg1.onload = () => { img1.src = newImg1.src; img1.classList.remove('skeleton'); };
+        newImg1.src = shuffled[0].image;
+      }
+      if (img2 && shuffled[1]) {
+        const newImg2 = new Image();
+        newImg2.onload = () => { img2.src = newImg2.src; img2.classList.remove('skeleton'); };
+        newImg2.src = shuffled[1].image;
+      }
     }
 
     // Update categories grid with random products from each category
