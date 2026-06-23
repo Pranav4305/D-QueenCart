@@ -239,7 +239,12 @@
 <div class="shop-wrapper">
   <!-- Sidebar Filters — Apply Filters button removed; checkboxes auto-apply -->
   <aside class="sidebar">
-    <div class="filter-title">Filter & Refine</div>
+    <button class="sidebar-toggle-btn" onclick="toggleMobileFilters()">
+      <span>Filter & Refine</span>
+      <span id="filterToggleIcon">+</span>
+    </button>
+    <div class="filter-title desktop-only">Filter & Refine</div>
+    <div class="filter-content" id="filterContent">
     <div class="filter-group">
       <div class="filter-group-label">Category</div>
       <div class="filter-options">
@@ -264,6 +269,7 @@
     </div>
     <button class="btn-apply" onclick="applyFilters()">Apply Filters</button>
     <button class="btn-clear" onclick="clearFilters()">Clear All</button>
+    </div> <!-- /filter-content -->
   </aside>
 
   <!-- Products Area -->
@@ -523,6 +529,18 @@ function loadProducts() {
 }
 
 loadProducts();
+
+function toggleMobileFilters() {
+  const content = document.getElementById('filterContent');
+  const icon = document.getElementById('filterToggleIcon');
+  if (content.classList.contains('active')) {
+    content.classList.remove('active');
+    icon.textContent = '+';
+  } else {
+    content.classList.add('active');
+    icon.textContent = '−';
+  }
+}
 </script>
 </body>
 </html>

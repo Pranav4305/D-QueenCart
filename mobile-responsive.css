@@ -12,6 +12,10 @@ img { max-width: 100%; height: auto; }
 /* ─── Ensure viewport meta is respected ─── */
 @viewport { width: device-width; }
 
+/* ─── Filter Toggle Defaults ─── */
+.sidebar-toggle-btn { display: none; }
+.desktop-only { display: block; }
+
 /* ══════════════════════════════════════════════════════════
    NAVBAR — shared across all pages
    ══════════════════════════════════════════════════════════ */
@@ -504,8 +508,13 @@ img { max-width: 100%; height: auto; }
     cursor: pointer;
     color: var(--dark);
     border-radius: 6px;
+    border-radius: 6px;
     margin-bottom: 1rem;
   }
+
+  .desktop-only { display: none !important; }
+  .filter-content { display: none; }
+  .filter-content.active { display: block; }
 
   .products-grid { 
     grid-template-columns: repeat(2, 1fr) !important;
