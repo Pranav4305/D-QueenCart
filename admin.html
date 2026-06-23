@@ -1728,9 +1728,14 @@
           if (o.items && Array.isArray(o.items)) {
             o.items.forEach(item => {
               if (item.id && String(item.id).length > 5) {
+                const qty = item.qty || 1;
                 db.collection('products').doc(String(item.id)).update({
-                  stock: firebase.firestore.FieldValue.increment(item.qty || 1)
+                  stock: firebase.firestore.FieldValue.increment(qty)
                 }).catch(e => console.warn('Stock restore failed', e));
+                
+                // Update local memory so Products tab reflects changes immediately
+                const p = allProducts.find(x => x._id === item.id);
+                if (p && p.stock != null) p.stock += qty;
               }
             });
           }
@@ -1739,13 +1744,21 @@
           if (o.items && Array.isArray(o.items)) {
             o.items.forEach(item => {
               if (item.id && String(item.id).length > 5) {
+                const qty = item.qty || 1;
                 db.collection('products').doc(String(item.id)).update({
-                  stock: firebase.firestore.FieldValue.increment(-(item.qty || 1))
+                  stock: firebase.firestore.FieldValue.increment(-qty)
                 }).catch(e => console.warn('Stock deduction failed', e));
+                
+                // Update local memory so Products tab reflects changes immediately
+                const p = allProducts.find(x => x._id === item.id);
+                if (p && p.stock != null) p.stock -= qty;
               }
             });
           }
         }
+
+        // Re-render products if we are currently on the products panel, or just refresh stats
+        renderProds();
 
         // Update pending pill
         const p = allOrders.filter(ord => ord.status === 'pending').length;
