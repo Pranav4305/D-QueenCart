@@ -1714,10 +1714,41 @@
     async function updateStatus(id, val) {
       if (!dbOk()) { toast('Firebase not connected', 'bad'); return; }
       try {
+        const o = allOrders.find(x => x._id === id);
+        if (!o) return;
+        const oldStatus = o.status;
+        if (oldStatus === val) return;
+
         await db.collection('orders').doc(id).update({ status: val, updatedAt: new Date().toISOString() });
-        const o = allOrders.find(x => x._id === id); if (o) o.status = val;
+        o.status = val;
+
+        // Stock management for cancellations
+        if (val === 'cancelled' && oldStatus !== 'cancelled') {
+          // Restore stock
+          if (o.items && Array.isArray(o.items)) {
+            o.items.forEach(item => {
+              if (item.id && String(item.id).length > 5) {
+                db.collection('products').doc(String(item.id)).update({
+                  stock: firebase.firestore.FieldValue.increment(item.qty || 1)
+                }).catch(e => console.warn('Stock restore failed', e));
+              }
+            });
+          }
+        } else if (oldStatus === 'cancelled' && val !== 'cancelled') {
+          // Deduct stock if un-cancelled
+          if (o.items && Array.isArray(o.items)) {
+            o.items.forEach(item => {
+              if (item.id && String(item.id).length > 5) {
+                db.collection('products').doc(String(item.id)).update({
+                  stock: firebase.firestore.FieldValue.increment(-(item.qty || 1))
+                }).catch(e => console.warn('Stock deduction failed', e));
+              }
+            });
+          }
+        }
+
         // Update pending pill
-        const p = allOrders.filter(o => o.status === 'pending').length;
+        const p = allOrders.filter(ord => ord.status === 'pending').length;
         const pill = document.getElementById('pendingPill');
         pill.textContent = p; pill.style.display = p > 0 ? 'inline-block' : 'none';
         toast('Status → ' + cap(val), 'ok');
