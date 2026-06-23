@@ -16,7 +16,7 @@ img { max-width: 100%; height: auto; }
    NAVBAR — shared across all pages
    ══════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
-  nav {
+  nav:not(.sidebar-nav) {
     padding: 0.9rem 1.5rem !important;
     position: fixed !important;
     top: 0; left: 0; right: 0;
@@ -115,7 +115,7 @@ img { max-width: 100%; height: auto; }
 }
 
 @media (max-width: 600px) {
-  nav { padding: 0.85rem 1rem !important; }
+  nav:not(.sidebar-nav) { padding: 0.85rem 1rem !important; }
 
   .nav-logo {
     font-size: 1.3rem !important;
@@ -473,7 +473,7 @@ img { max-width: 100%; height: auto; }
 @media (max-width: 1024px) {
   .page-header { padding: 6rem 2rem 2rem !important; }
 
-  nav { padding: 0.9rem 2rem !important; }
+  nav:not(.sidebar-nav) { padding: 0.9rem 2rem !important; }
 
   .shop-wrapper {
     grid-template-columns: 1fr !important;
@@ -648,7 +648,7 @@ img { max-width: 100%; height: auto; }
    CHECKOUT PAGE (checkout.html)
    ══════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
-  nav { padding: 0.9rem 1.5rem !important; }
+  nav:not(.sidebar-nav) { padding: 0.9rem 1.5rem !important; }
 }
 
 @media (max-width: 900px) {
