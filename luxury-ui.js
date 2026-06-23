@@ -213,7 +213,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function initMobileMenu() {
         const menuToggle = document.getElementById('menuToggle');
         const navLinks = document.querySelector('.nav-links');
-        
+        const navOverlay = document.getElementById('navOverlay');
+
         if (!menuToggle || !navLinks) {
             console.warn('Mobile menu elements not found:', { menuToggle, navLinks });
             return;
@@ -221,34 +222,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log('Mobile menu initialized');
 
+        function openMenu() {
+            menuToggle.classList.add('active');
+            navLinks.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if (navOverlay) navOverlay.classList.add('active');
+        }
+
+        function closeMenu() {
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+            document.body.style.overflow = '';
+            if (navOverlay) navOverlay.classList.remove('active');
+        }
+
         // Toggle menu on click
         menuToggle.addEventListener('click', (e) => {
-            console.log('Menu toggle clicked');
             e.preventDefault();
             e.stopPropagation();
-            menuToggle.classList.toggle('active');
-            navLinks.classList.toggle('active');
-            document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+            if (navLinks.classList.contains('active')) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
         });
+
+        // Close menu when clicking overlay
+        if (navOverlay) {
+            navOverlay.addEventListener('click', closeMenu);
+        }
 
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
-            if (navLinks.classList.contains('active') && !navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
-                console.log('Clicked outside - closing menu');
-                menuToggle.classList.remove('active');
-                navLinks.classList.remove('active');
-                document.body.style.overflow = '';
+            if (navLinks.classList.contains('active') &&
+                !navLinks.contains(e.target) &&
+                !menuToggle.contains(e.target)) {
+                closeMenu();
             }
         });
 
         // Close menu when clicking a link
         navLinks.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
-                console.log('Link clicked - closing menu');
-                menuToggle.classList.remove('active');
-                navLinks.classList.remove('active');
-                document.body.style.overflow = '';
+                closeMenu();
             });
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+                closeMenu();
+            }
         });
     }
 

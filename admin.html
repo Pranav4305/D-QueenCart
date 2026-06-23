@@ -985,9 +985,11 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="mobile-responsive.css" />
 </head>
 
 <body>
+  <div class="admin-overlay" id="adminOverlay" onclick="toggleAdminSidebar()"></div>
 
   <!-- Auth Gate Removed -->
 
@@ -1092,7 +1094,10 @@
 
   <main class="main">
     <div class="topbar">
-      <h1 class="page-title" id="panelTitle">Dashboard</h1>
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <button class="admin-toggle-btn" id="adminToggle" onclick="toggleAdminSidebar()" style="display:none;">☰</button>
+        <h1 class="page-title" id="panelTitle">Dashboard</h1>
+      </div>
       <div class="topbar-right">
         <div class="notif-btn" title="Notifications">🔔<div class="notif-dot" id="notifDot"></div>
         </div>
@@ -2517,6 +2522,14 @@
     }
 
     // Init is handled by DOMContentLoaded listener above
+
+    function toggleAdminSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.getElementById('adminOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+      document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+    }
   </script>
   <script src="luxury-ui.js"></script>
 </body>

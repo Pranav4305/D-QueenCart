@@ -223,7 +223,7 @@ h1, h2, h3, .page-title, .modal-title {
 }
 
 .page-title {
-  font-size: 4rem !important;
+  font-size: clamp(1.8rem, 6vw, 4rem) !important;
   font-weight: 400 !important;
   letter-spacing: 0.03em !important;
   background: var(--gold-grad);
@@ -231,6 +231,12 @@ h1, h2, h3, .page-title, .modal-title {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
+}
+
+@media (max-width: 600px) {
+  .page-title {
+    font-size: clamp(1.6rem, 8vw, 2.4rem) !important;
+  }
 }
 
 /* GSAP/Observer Scroll Animations */
