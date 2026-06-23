@@ -746,7 +746,7 @@ img { max-width: 100%; height: auto; }
    ══════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
   /* Admin sidebar becomes a top-slide or hidden drawer */
-  .admin-sidebar {
+  body.admin-page .sidebar {
     position: fixed !important;
     left: -280px !important;
     top: 0 !important;
@@ -758,15 +758,15 @@ img { max-width: 100%; height: auto; }
     overflow-y: auto !important;
   }
 
-  .admin-sidebar.open { left: 0 !important; }
+  body.admin-page .sidebar.open { left: 0 !important; }
 
-  .admin-main {
+  body.admin-page .main {
     margin-left: 0 !important;
     width: 100% !important;
     padding: 1rem !important;
   }
 
-  .admin-topbar {
+  body.admin-page .topbar {
     padding: 1rem !important;
     position: sticky !important;
     top: 0 !important;
