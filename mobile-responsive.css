@@ -722,9 +722,16 @@ img { max-width: 100%; height: auto; }
   body.auth-page { grid-template-columns: 1fr !important; }
   .visual { display: none !important; }
   .panel {
-    padding: 3rem 2rem !important;
+    padding: 2rem !important;
     min-height: 100vh !important;
     min-height: 100dvh !important;
+    justify-content: flex-start !important;
+    overflow-y: auto !important;
+  }
+  .back-link {
+    position: static !important;
+    margin-bottom: 2rem !important;
+    display: inline-flex !important;
   }
 }
 
