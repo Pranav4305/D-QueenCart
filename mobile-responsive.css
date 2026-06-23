@@ -671,10 +671,10 @@ img { max-width: 100%; height: auto; }
     position: static !important;
   }
 
-  /* Show order summary before the form on mobile */
+  /* Show order summary after the form on mobile */
   .checkout-layout {
     display: flex !important;
-    flex-direction: column-reverse !important;
+    flex-direction: column !important;
   }
 }
 
